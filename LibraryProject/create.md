@@ -1,10 +1,16 @@
-# Creating a Book Entry# Create Operation in Django Shell
+# Creating a Book Entry# Creating a Book Entry# Create Operation in Django Shell
 
 
 
-To create a new book entry, we'll use the following commands in the Django shell:```python
+```python
 
-# Create a new book instance
+>>> from bookshelf.models import Book
+
+>>> book = Book(title="1984", author="George Orwell", publication_year=1949)To create a new book entry, we'll use the following commands in the Django shell:```python
+
+>>> book.save()
+
+```# Create a new book instance
 
 ```pythonbook = Book.objects.create(
 
