@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic.detail import DetailView
+from django.views.generic import ListView
 # Import Library model first to ensure it's available for the class-based view
 from .models import Library, Book
 
