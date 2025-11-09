@@ -1,7 +1,5 @@
 # Create Operation in Django Shell
 
-To create a new book instance, use these commands in the Django shell:
-
 ```python
 # Import the Book model
 >>> from bookshelf.models import Book
@@ -16,4 +14,5 @@ To create a new book instance, use these commands in the Django shell:
 
 # Verify creation by checking the book's id
 >>> print(book.id)  # Should print a number (e.g., 1) indicating the book was saved
+1
 ```
