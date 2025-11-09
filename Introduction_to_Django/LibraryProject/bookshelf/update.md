@@ -1,7 +1,5 @@
 # Updating Book Information
 
-To update a book's information in the database, use these commands in the Django shell:
-
 ```python
 # Import the Book model
 >>> from bookshelf.models import Book

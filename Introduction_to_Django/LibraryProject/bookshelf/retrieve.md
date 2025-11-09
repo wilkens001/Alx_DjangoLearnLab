@@ -1,7 +1,5 @@
 # Retrieving Book Information
 
-To retrieve a book instance from the database, use these commands in the Django shell:
-
 ```python
 # Import the Book model
 >>> from bookshelf.models import Book
