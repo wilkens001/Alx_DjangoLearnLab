@@ -48,15 +48,18 @@ def librarian_for_library(library):
     """
     # If a Library instance is passed
     if isinstance(library, Library):
-        return Librarian.objects.filter(library=library).first()
+        try:
+            return Librarian.objects.get(library=library)
+        except Librarian.DoesNotExist:
+            return None
     
     # If library name is passed as string
     try:
         # First try to get the library
         lib = Library.objects.get(name=library)
-        # Then get its librarian
-        return Librarian.objects.filter(library=lib).first()
-    except Library.DoesNotExist:
+        # Then get its librarian using objects.get()
+        return Librarian.objects.get(library=lib)
+    except (Library.DoesNotExist, Librarian.DoesNotExist):
         return None
 
 
