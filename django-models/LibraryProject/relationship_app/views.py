@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from .models import Library, Book
+from django.contrib.auth.decorators import user_passes_test
+
 
 @login_required
 def list_books(request):
@@ -52,6 +54,32 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'relationship_app/register.html', {'form': form})
+
+
+def _has_role(user, role_name):
+    """Helper to check user's role safely."""
+    try:
+        return user.is_authenticated and user.userprofile.role == role_name
+    except Exception:
+        return False
+
+
+@user_passes_test(lambda u: _has_role(u, 'Admin'))
+def admin_view(request):
+    """View restricted to Admin users."""
+    return render(request, 'relationship_app/admin_view.html')
+
+
+@user_passes_test(lambda u: _has_role(u, 'Librarian'))
+def librarian_view(request):
+    """View restricted to Librarian users."""
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+@user_passes_test(lambda u: _has_role(u, 'Member'))
+def member_view(request):
+    """View restricted to Member users."""
+    return render(request, 'relationship_app/member_view.html')
 
 
 
