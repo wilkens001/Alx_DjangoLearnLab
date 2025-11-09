@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Book, Library
+# Import Library model first to ensure it's available for the class-based view
+from .models import Library, Book
 
 def list_books(request):
     """Function-based view to list all books
@@ -14,10 +15,10 @@ def list_books(request):
 
 
 class LibraryDetailView(DetailView):
-    """Class-based view to display details for a specific library
-    This view displays details of a specific library, listing all books available in that library
+    """Class-based view to display details for a specific library.
+    This view displays details of a specific library, listing all books available in that library.
     """
-    model = Library
+    model = Library  # Specify the Library model for the DetailView
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
@@ -28,4 +29,6 @@ class LibraryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         """Add additional context data"""
         context = super().get_context_data(**kwargs)
+        # Ensure books are prefetched for the template
+        context['library'] = self.get_object()
         return context
