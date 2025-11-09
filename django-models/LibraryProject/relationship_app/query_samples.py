@@ -9,8 +9,23 @@ from relationship_app.models import Author, Book, Library, Librarian
 
 
 def books_by_author(author_name):
-    """Query all books by a specific author name."""
-    return Book.objects.filter(author__name=author_name)
+    """Query all books by a specific author name.
+    
+    Args:
+        author_name: Either an Author instance or the name of the author as string
+        
+    Returns:
+        QuerySet of books by the specified author
+    """
+    if isinstance(author_name, Author):
+        return Book.objects.filter(author=author_name)
+    # Try to find the author first to avoid potential multiple DB hits
+    try:
+        author = Author.objects.get(name=author_name)
+        return Book.objects.filter(author=author)
+    except Author.DoesNotExist:
+        # Return empty queryset if author not found
+        return Book.objects.none()
 
 
 def books_in_library(library_name):
