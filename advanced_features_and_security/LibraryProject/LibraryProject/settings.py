@@ -113,34 +113,86 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # information through error pages and stack traces.
 # DEBUG = False  # Uncomment this line when deploying to production
 
-# HTTPS and Cookie Security
+# ==============================================================================
+# HTTPS REDIRECT AND SSL/TLS CONFIGURATION
+# ==============================================================================
+# These settings enforce HTTPS connections and ensure secure data transmission
+# between the client and server.
+
+# SECURE_SSL_REDIRECT: Redirects all HTTP requests to HTTPS
+# When enabled, any request made over HTTP will automatically be redirected to HTTPS.
+# This ensures that all communication with the application is encrypted.
+# IMPORTANT: Only enable this when you have a valid SSL/TLS certificate configured
+# on your web server (Apache, Nginx, etc.)
+SECURE_SSL_REDIRECT = True  # Set to False for local development without SSL
+
+# ==============================================================================
+# SECURE COOKIE CONFIGURATION
+# ==============================================================================
 # These settings ensure that security-sensitive cookies are only transmitted
-# over HTTPS connections, preventing interception by attackers.
-# NOTE: These should be enabled when using HTTPS in production
-CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is only sent over HTTPS
-SESSION_COOKIE_SECURE = True  # Ensures session cookie is only sent over HTTPS
-SECURE_SSL_REDIRECT = False  # Set to True in production to redirect HTTP to HTTPS
+# over HTTPS connections, preventing interception by attackers through
+# man-in-the-middle attacks.
 
-# HTTP Strict Transport Security (HSTS)
-# Forces browsers to only interact with the site over HTTPS for the specified duration
-# This prevents protocol downgrade attacks and cookie hijacking
-SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains
-SECURE_HSTS_PRELOAD = True  # Allow inclusion in browser HSTS preload lists
+# CSRF_COOKIE_SECURE: Ensures CSRF token cookie is only sent over HTTPS
+# This prevents the CSRF token from being intercepted over insecure connections
+CSRF_COOKIE_SECURE = True
 
-# Browser Security Headers
-# These headers provide additional layers of protection against various attacks
+# SESSION_COOKIE_SECURE: Ensures session cookie is only sent over HTTPS
+# This prevents session hijacking by ensuring session IDs are never transmitted
+# over unencrypted connections
+SESSION_COOKIE_SECURE = True
+
+# ==============================================================================
+# HTTP STRICT TRANSPORT SECURITY (HSTS) CONFIGURATION
+# ==============================================================================
+# HSTS is a security feature that forces browsers to only interact with the site
+# over HTTPS, even if the user types "http://" in the address bar or clicks on
+# an HTTP link. This prevents protocol downgrade attacks and cookie hijacking.
+
+# SECURE_HSTS_SECONDS: Duration (in seconds) that browsers should remember to
+# only access the site via HTTPS. Set to 31536000 (1 year) as recommended.
+# Start with a smaller value (e.g., 300) for testing, then increase to 1 year.
+SECURE_HSTS_SECONDS = 31536000  # 1 year (recommended for production)
+
+# SECURE_HSTS_INCLUDE_SUBDOMAINS: Applies HSTS policy to all subdomains
+# WARNING: Only enable this if ALL subdomains support HTTPS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# SECURE_HSTS_PRELOAD: Allows the site to be included in browsers' HSTS preload lists
+# This provides HTTPS protection even on the first visit to the site.
+# To submit your site: https://hstspreload.org/
+# WARNING: This is a commitment that cannot be easily undone
+SECURE_HSTS_PRELOAD = True
+
+# ==============================================================================
+# SECURE HTTP HEADERS CONFIGURATION
+# ==============================================================================
+# These headers provide additional layers of protection against various web attacks
+# including clickjacking, XSS, and MIME-sniffing attacks.
 
 # X-Content-Type-Options: Prevents MIME-sniffing attacks
-# Stops browsers from trying to guess content types, which could lead to XSS
+# SECURE_CONTENT_TYPE_NOSNIFF sends the "X-Content-Type-Options: nosniff" header
+# This stops browsers from trying to guess ("sniff") the MIME type of content,
+# which could lead to XSS vulnerabilities if a browser interprets a file
+# differently than the server intended.
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # X-Frame-Options: Prevents clickjacking attacks
-# Stops the site from being embedded in frames/iframes on other domains
-X_FRAME_OPTIONS = 'DENY'  # Options: 'DENY', 'SAMEORIGIN'
+# This header controls whether the site can be embedded in frames/iframes.
+# Options:
+#   - 'DENY': Prevents any domain from framing the content
+#   - 'SAMEORIGIN': Only allows the same site to frame the content
+# Clickjacking is an attack where a malicious site tricks users into clicking
+# on something different from what they perceive, potentially revealing
+# confidential information or taking control of their account.
+X_FRAME_OPTIONS = 'DENY'
 
 # X-XSS-Protection: Enables browser's built-in XSS filter
-# Provides an additional layer of XSS protection in older browsers
+# SECURE_BROWSER_XSS_FILTER sends the "X-XSS-Protection: 1; mode=block" header
+# This enables the browser's built-in XSS (Cross-Site Scripting) filtering
+# and tells the browser to block the page if an XSS attack is detected.
+# Note: Modern browsers rely more on CSP, but this provides defense-in-depth
+# for older browsers.
 SECURE_BROWSER_XSS_FILTER = True
 
 # CSRF Protection Settings
