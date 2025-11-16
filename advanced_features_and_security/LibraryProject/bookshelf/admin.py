@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Book, CustomUser
 
 
-@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     """Admin configuration for the CustomUser model"""
     # Display these fields in the list view
@@ -47,3 +46,7 @@ class BookAdmin(admin.ModelAdmin):
     
     # Order entries by title by default
     ordering = ('title',)
+
+
+# Register the CustomUser model with CustomUserAdmin
+admin.site.register(CustomUser, CustomUserAdmin)
