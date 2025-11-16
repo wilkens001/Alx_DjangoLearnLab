@@ -16,6 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from .models import Book
+from .forms import ExampleForm
 from django import forms
 
 
@@ -204,23 +205,27 @@ def form_example(request):
     
     This view serves as an educational example showing Django's security features:
     1. CSRF token protection for form submissions
-    2. Input validation and sanitization
+    2. Input validation and sanitization using Django forms
     3. XSS prevention through output escaping
     
     SECURITY MEASURES:
     - CSRF middleware validates the token on POST requests
+    - Django forms provide automatic validation and sanitization
     - All user input is validated before processing
     - Output is automatically escaped in templates
     """
     if request.method == 'POST':
-        # SECURITY: Input Validation
-        # Always validate and sanitize user input before processing
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        message = request.POST.get('message', '').strip()
+        # SECURITY: Use Django Forms for Input Validation
+        # Django forms automatically validate and sanitize user input
+        form = ExampleForm(request.POST)
         
-        # Basic validation (in production, use Django forms for robust validation)
-        if name and email and message:
+        if form.is_valid():
+            # SECURITY: Access cleaned and validated data
+            # form.cleaned_data contains sanitized input that has passed validation
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+            
             # Process the form data securely
             # In a real application, you would save to database, send email, etc.
             messages.success(
@@ -229,6 +234,13 @@ def form_example(request):
             )
             return redirect('bookshelf:form_example')
         else:
-            messages.error(request, 'All fields are required.')
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        # GET request - display empty form
+        form = ExampleForm()
     
-    return render(request, 'bookshelf/form_example.html')
+    context = {
+        'form': form
+    }
+    return render(request, 'bookshelf/form_example.html', context)

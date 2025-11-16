@@ -112,52 +112,78 @@
         Without this token, the form will be rejected by Django's CSRF middleware
         with a 403 Forbidden error.
         -->
+        {% if messages %}
+        <div class="messages" style="margin-bottom: 20px;">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="padding: 10px; margin: 10px 0; border-radius: 4px; {% if message.tags == 'success' %}background-color: #d4edda; color: #155724;{% else %}background-color: #f8d7da; color: #721c24;{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="POST" action="">
             {% csrf_token %}
             
             <div class="form-group">
-                <label for="name">Name:</label>
+                <label for="{{ form.name.id_for_label }}">Name:</label>
                 <!-- 
                 SECURITY: Input Validation
                 Django forms automatically validate and sanitize input data.
-                The maxlength attribute provides client-side validation.
+                The form field handles both client-side and server-side validation.
                 -->
-                <input type="text" 
-                       id="name" 
-                       name="name" 
-                       required 
-                       maxlength="100"
-                       placeholder="Enter your name">
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div style="color: #dc3545; margin-top: 5px;">
+                        {{ form.name.errors }}
+                    </div>
+                {% endif %}
+                {% if form.name.help_text %}
+                    <small style="color: #666;">{{ form.name.help_text }}</small>
+                {% endif %}
             </div>
 
             <div class="form-group">
-                <label for="email">Email:</label>
+                <label for="{{ form.email.id_for_label }}">Email:</label>
                 <!-- 
                 SECURITY: Email Validation
-                The email input type provides built-in validation.
-                Django's EmailField provides additional server-side validation.
+                Django's EmailField provides robust server-side validation.
+                This ensures only valid email addresses are accepted.
                 -->
-                <input type="email" 
-                       id="email" 
-                       name="email" 
-                       required 
-                       maxlength="254"
-                       placeholder="your.email@example.com">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div style="color: #dc3545; margin-top: 5px;">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+                {% if form.email.help_text %}
+                    <small style="color: #666;">{{ form.email.help_text }}</small>
+                {% endif %}
             </div>
 
             <div class="form-group">
-                <label for="message">Message:</label>
+                <label for="{{ form.message.id_for_label }}">Message:</label>
                 <!-- 
                 SECURITY: XSS Prevention
                 All user input is automatically escaped by Django's template engine.
                 This prevents malicious scripts from being executed.
                 -->
-                <textarea id="message" 
-                          name="message" 
-                          required 
-                          maxlength="1000"
-                          placeholder="Enter your message..."></textarea>
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div style="color: #dc3545; margin-top: 5px;">
+                        {{ form.message.errors }}
+                    </div>
+                {% endif %}
+                {% if form.message.help_text %}
+                    <small style="color: #666;">{{ form.message.help_text }}</small>
+                {% endif %}
             </div>
+
+            {% if form.non_field_errors %}
+            <div style="color: #dc3545; margin-bottom: 15px;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
 
             <button type="submit">Submit Form</button>
         </form>
