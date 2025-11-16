@@ -80,3 +80,10 @@ class Book(models.Model):
     class Meta:
         """Meta options for the Book model"""
         ordering = ['title', 'author']
+        # Custom permissions for fine-grained access control
+        permissions = [
+            ("can_view", "Can view book"),
+            ("can_create", "Can create book"),
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
+        ]
