@@ -36,17 +36,56 @@ class BookForm(forms.ModelForm):
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
     """
-    View to list all books.
+    View to list all books with secure search functionality.
     
     Requires: bookshelf.can_view permission
     
-    This view displays all books in the database. Users without the can_view
-    permission will receive a 403 Forbidden error.
+    This view displays all books in the database with optional search filtering.
+    Users without the can_view permission will receive a 403 Forbidden error.
+    
+    SECURITY MEASURES:
+    1. SQL Injection Prevention: Uses Django ORM's parameterized queries
+    2. XSS Prevention: All output is automatically escaped in templates
+    3. Input Validation: Search query is validated and sanitized
     """
-    books = Book.objects.all().order_by('title')
+    # Get the search query from GET parameters
+    # SECURITY: Using request.GET.get() safely retrieves user input
+    search_query = request.GET.get('search', '').strip()
+    
+    # Start with all books
+    books = Book.objects.all()
+    
+    if search_query:
+        # SECURITY: SQL Injection Prevention
+        # Using Django ORM's Q objects and filter() method ensures that
+        # the search query is properly parameterized and escaped.
+        # This prevents SQL injection attacks by never directly interpolating
+        # user input into SQL queries.
+        #
+        # WRONG (vulnerable to SQL injection):
+        # books = Book.objects.raw(f"SELECT * FROM book WHERE title LIKE '%{search_query}%'")
+        #
+        # CORRECT (safe from SQL injection):
+        from django.db.models import Q
+        
+        # Validate search query length to prevent abuse
+        if len(search_query) > 200:
+            messages.warning(request, 'Search query too long. Please use fewer characters.')
+            search_query = search_query[:200]
+        
+        # Use Q objects for complex queries with proper parameterization
+        books = books.filter(
+            Q(title__icontains=search_query) | 
+            Q(author__icontains=search_query)
+        )
+    
+    # Order results for consistent display
+    books = books.order_by('title')
+    
     context = {
         'books': books,
-        'title': 'Book List'
+        'title': 'Book List',
+        'search_query': search_query  # Pass back for display in template
     }
     return render(request, 'bookshelf/book_list.html', context)
 
@@ -157,3 +196,39 @@ def book_delete(request, pk):
         'title': f'Delete Book: {book.title}'
     }
     return render(request, 'bookshelf/book_confirm_delete.html', context)
+
+
+def form_example(request):
+    """
+    Example view demonstrating CSRF protection and secure form handling.
+    
+    This view serves as an educational example showing Django's security features:
+    1. CSRF token protection for form submissions
+    2. Input validation and sanitization
+    3. XSS prevention through output escaping
+    
+    SECURITY MEASURES:
+    - CSRF middleware validates the token on POST requests
+    - All user input is validated before processing
+    - Output is automatically escaped in templates
+    """
+    if request.method == 'POST':
+        # SECURITY: Input Validation
+        # Always validate and sanitize user input before processing
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Basic validation (in production, use Django forms for robust validation)
+        if name and email and message:
+            # Process the form data securely
+            # In a real application, you would save to database, send email, etc.
+            messages.success(
+                request, 
+                f'Thank you, {name}! Your message has been received securely.'
+            )
+            return redirect('bookshelf:form_example')
+        else:
+            messages.error(request, 'All fields are required.')
+    
+    return render(request, 'bookshelf/form_example.html')

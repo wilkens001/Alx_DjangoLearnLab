@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .search-form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-form input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-form button:hover {
+            background-color: #0056b3;
+        }
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .book-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .book-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .book-author {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .book-year {
+            color: #999;
+            font-size: 0.9em;
+        }
+        .actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            display: inline-block;
+            padding: 5px 15px;
+            margin-right: 5px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .btn-view {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-edit {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        .no-books {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            color: #666;
+        }
+        .create-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .create-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    
+    {% if perms.bookshelf.can_create %}
+    <a href="{% url 'bookshelf:book_create' %}" class="create-btn">+ Create New Book</a>
+    {% endif %}
+
+    <!-- 
+    SECURITY: Search Form with CSRF Protection
+    The {% csrf_token %} tag is MANDATORY for all POST forms to prevent
+    Cross-Site Request Forgery (CSRF) attacks. This token ensures that
+    form submissions come from authenticated users on our site.
+    -->
+    <div class="search-form">
+        <form method="GET" action="{% url 'bookshelf:book_list' %}">
+            <!-- CSRF token not needed for GET requests, but shown for POST example -->
+            <input type="text" 
+                   name="search" 
+                   placeholder="Search books by title or author..." 
+                   value="{{ request.GET.search }}"
+                   maxlength="200">
+            <button type="submit">Search</button>
+            {% if request.GET.search %}
+            <a href="{% url 'bookshelf:book_list' %}" class="btn btn-view">Clear Search</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if books %}
+    <div class="book-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <!-- 
+            SECURITY: Output Escaping
+            Django automatically escapes all variables to prevent XSS attacks.
+            The {{ book.title }} syntax ensures HTML special characters are escaped.
+            -->
+            <div class="book-title">{{ book.title }}</div>
+            <div class="book-author">by {{ book.author }}</div>
+            <div class="book-year">Published: {{ book.publication_year }}</div>
+            
+            <div class="actions">
+                {% if perms.bookshelf.can_view %}
+                <a href="{% url 'bookshelf:book_detail' book.pk %}" class="btn btn-view">View</a>
+                {% endif %}
+                
+                {% if perms.bookshelf.can_edit %}
+                <a href="{% url 'bookshelf:book_edit' book.pk %}" class="btn btn-edit">Edit</a>
+                {% endif %}
+                
+                {% if perms.bookshelf.can_delete %}
+                <a href="{% url 'bookshelf:book_delete' book.pk %}" class="btn btn-delete">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-books">
+        <p>No books found{% if request.GET.search %} matching "{{ request.GET.search }}"{% endif %}.</p>
+    </div>
+    {% endif %}
+</body>
+</html>
