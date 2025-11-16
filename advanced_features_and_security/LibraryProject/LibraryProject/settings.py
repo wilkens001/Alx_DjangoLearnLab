@@ -126,6 +126,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # on your web server (Apache, Nginx, etc.)
 SECURE_SSL_REDIRECT = True  # Set to False for local development without SSL
 
+# SECURE_PROXY_SSL_HEADER: Configures Django to trust the X-Forwarded-Proto header
+# This is CRITICAL when Django is behind a reverse proxy (like Nginx or Apache) or
+# a load balancer that terminates SSL/TLS connections.
+# The proxy forwards requests to Django over HTTP but sets the X-Forwarded-Proto
+# header to indicate the original protocol (https) used by the client.
+# Format: ('HTTP_X_FORWARDED_PROTO', 'https')
+# WARNING: Only enable this if you are using a proxy that you control and trust.
+# Enabling this on a server directly exposed to the internet without a proxy
+# could allow attackers to spoof the header and bypass security checks.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # ==============================================================================
 # SECURE COOKIE CONFIGURATION
 # ==============================================================================
