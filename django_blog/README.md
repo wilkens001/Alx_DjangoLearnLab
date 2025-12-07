@@ -37,11 +37,20 @@ django_blog/
 
 ## Features
 
+### Blog Functionality
 - Blog post creation and management
-- User authentication with Django's built-in User model
 - Clean and responsive design
 - Admin interface for managing posts
 - Automatic timestamp for published posts
+
+### User Authentication System
+- **User Registration**: Custom registration form with email validation
+- **User Login**: Secure authentication with session management
+- **User Logout**: Secure session termination
+- **Profile Management**: View and edit user profile information
+- **Password Security**: PBKDF2 hashing with salt
+- **CSRF Protection**: All forms protected against CSRF attacks
+- **Form Validation**: Comprehensive server-side validation
 
 ## Installation
 
@@ -85,9 +94,45 @@ django_blog/
 
 ## Usage
 
+### For Users
+
+1. **Register an Account**:
+   - Navigate to `/register/`
+   - Fill in username, email, and password
+   - Automatically logged in after registration
+
+2. **Login**:
+   - Navigate to `/login/`
+   - Enter your credentials
+   - Redirected to your profile
+
+3. **Manage Profile**:
+   - Access profile at `/profile/`
+   - View account information
+   - Update username or email
+
+4. **Logout**:
+   - Click "Logout" in the navigation menu
+   - Session terminated securely
+
+### For Administrators
+
 1. Log in to the admin panel at `/admin/`
 2. Create blog posts through the admin interface
-3. View posts on the home page
+3. Manage users and content
+
+## Authentication Documentation
+
+For comprehensive information about the authentication system, see [AUTHENTICATION_DOCUMENTATION.md](AUTHENTICATION_DOCUMENTATION.md).
+
+This documentation includes:
+- Detailed architecture overview
+- Component descriptions
+- Security features
+- Usage guide for developers
+- Testing instructions
+- API reference
+- Troubleshooting guide
 
 ## Technologies Used
 
