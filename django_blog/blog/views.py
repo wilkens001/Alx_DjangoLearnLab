@@ -1,11 +1,18 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.views.generic import CreateView
+from django.views.generic import (
+    ListView, 
+    DetailView, 
+    CreateView, 
+    UpdateView, 
+    DeleteView
+)
 from django.urls import reverse_lazy
 from .models import Post
-from .forms import CustomUserCreationForm, UserUpdateForm
+from .forms import CustomUserCreationForm, UserUpdateForm, PostForm
 
 
 def home(request):
@@ -92,3 +99,129 @@ def profile(request):
         'user': request.user
     }
     return render(request, 'blog/profile.html', context)
+
+
+# ============================================================================
+# Blog Post CRUD Views (Class-Based Views)
+# ============================================================================
+
+class PostListView(ListView):
+    """
+    Display a list of all blog posts.
+    
+    Accessible to all users (authenticated or not).
+    Posts are ordered by publication date (newest first).
+    """
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+    ordering = ['-published_date']
+    paginate_by = 10
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'All Blog Posts'
+        return context
+
+
+class PostDetailView(DetailView):
+    """
+    Display a single blog post in detail.
+    
+    Accessible to all users (authenticated or not).
+    Shows full content, author, and publication date.
+    """
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.object.title
+        return context
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    """
+    Allow authenticated users to create new blog posts.
+    
+    The logged-in user is automatically set as the author.
+    Redirects to the post detail page after successful creation.
+    """
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+    
+    def form_valid(self, form):
+        """Set the author to the current logged-in user before saving."""
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Your post has been created successfully!')
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create New Post'
+        context['button_text'] = 'Create Post'
+        return context
+
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Allow post authors to edit their own blog posts.
+    
+    Only the author of the post can access this view.
+    Uses UserPassesTestMixin to ensure authorization.
+    """
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+    
+    def form_valid(self, form):
+        """Validate and save the updated post."""
+        messages.success(self.request, 'Your post has been updated successfully!')
+        return super().form_valid(form)
+    
+    def test_func(self):
+        """
+        Check if the current user is the author of the post.
+        Returns True if user is the author, False otherwise.
+        """
+        post = self.get_object()
+        return self.request.user == post.author
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Post'
+        context['button_text'] = 'Update Post'
+        return context
+
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Allow post authors to delete their own blog posts.
+    
+    Only the author of the post can access this view.
+    Requires confirmation before deletion.
+    Redirects to post list after successful deletion.
+    """
+    model = Post
+    template_name = 'blog/post_confirm_delete.html'
+    success_url = reverse_lazy('post-list')
+    
+    def test_func(self):
+        """
+        Check if the current user is the author of the post.
+        Returns True if user is the author, False otherwise.
+        """
+        post = self.get_object()
+        return self.request.user == post.author
+    
+    def delete(self, request, *args, **kwargs):
+        """Override delete to add a success message."""
+        messages.success(request, 'Your post has been deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Delete Post'
+        return context

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class Post(models.Model):
@@ -24,3 +25,10 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolute_url(self):
+        """
+        Return the URL to access a particular post instance.
+        Used by CreateView and UpdateView for redirects after successful form submission.
+        """
+        return reverse('post-detail', kwargs={'pk': self.pk})

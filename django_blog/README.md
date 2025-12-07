@@ -38,10 +38,15 @@ django_blog/
 ## Features
 
 ### Blog Functionality
-- Blog post creation and management
-- Clean and responsive design
-- Admin interface for managing posts
-- Automatic timestamp for published posts
+- **Complete CRUD Operations**: Create, Read, Update, Delete blog posts
+- **List View**: Display all posts with pagination (10 per page)
+- **Detail View**: View full post content with author information
+- **Create Post**: Authenticated users can write new posts
+- **Edit Post**: Authors can update their own posts
+- **Delete Post**: Authors can delete their own posts with confirmation
+- **Clean and responsive design**
+- **Admin interface for managing posts**
+- **Automatic timestamp for published posts**
 
 ### User Authentication System
 - **User Registration**: Custom registration form with email validation
@@ -121,18 +126,29 @@ django_blog/
 2. Create blog posts through the admin interface
 3. Manage users and content
 
-## Authentication Documentation
+## Documentation
 
+### Authentication System
 For comprehensive information about the authentication system, see [AUTHENTICATION_DOCUMENTATION.md](AUTHENTICATION_DOCUMENTATION.md).
 
-This documentation includes:
-- Detailed architecture overview
-- Component descriptions
-- Security features
-- Usage guide for developers
+**Includes:**
+- User registration, login, logout
+- Profile management
+- Security features and best practices
 - Testing instructions
-- API reference
-- Troubleshooting guide
+
+### Blog Post Management
+For complete details about blog post CRUD operations, see [BLOG_POST_FEATURES.md](BLOG_POST_FEATURES.md).
+
+**Includes:**
+- Create, Read, Update, Delete operations
+- Permissions and authorization
+- Class-based views implementation
+- Form handling and validation
+- Testing procedures
+
+### Quick Testing
+For rapid testing procedures, see [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
 ## Technologies Used
 
