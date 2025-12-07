@@ -32,3 +32,56 @@ class Post(models.Model):
         Used by CreateView and UpdateView for redirects after successful form submission.
         """
         return reverse('post-detail', kwargs={'pk': self.pk})
+
+
+class Comment(models.Model):
+    """
+    Comment model representing a comment on a blog post.
+    
+    Fields:
+        post: The blog post this comment belongs to
+        author: The user who wrote the comment
+        content: The text content of the comment
+        created_at: When the comment was created
+        updated_at: When the comment was last updated
+    """
+    post = models.ForeignKey(
+        Post, 
+        on_delete=models.CASCADE, 
+        related_name='comments',
+        help_text='The post this comment belongs to'
+    )
+    author = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='comments',
+        help_text='The user who wrote this comment'
+    )
+    content = models.TextField(
+        help_text='The comment text'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='When the comment was created'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text='When the comment was last updated'
+    )
+
+    class Meta:
+        ordering = ['created_at']  # Oldest comments first
+        verbose_name = 'Comment'
+        verbose_name_plural = 'Comments'
+        indexes = [
+            models.Index(fields=['post', 'created_at']),
+        ]
+
+    def __str__(self):
+        return f'Comment by {self.author.username} on {self.post.title}'
+    
+    def get_absolute_url(self):
+        """
+        Return the URL to the post detail page where this comment appears.
+        """
+        return reverse('post-detail', kwargs={'pk': self.post.pk})

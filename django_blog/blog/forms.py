@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post
+from .models import Post, Comment
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -130,3 +130,36 @@ class PostForm(forms.ModelForm):
         if len(content) < 20:
             raise forms.ValidationError('Content must be at least 20 characters long.')
         return content
+
+
+class CommentForm(forms.ModelForm):
+    """
+    Form for creating and updating comments on blog posts.
+    
+    Only includes the content field as post and author are set automatically.
+    """
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Write your comment here...',
+            'rows': 4
+        }),
+        label='Your Comment',
+        help_text='Share your thoughts about this post'
+    )
+    
+    class Meta:
+        model = Comment
+        fields = ['content']
+        # Note: post and author are excluded as they're set automatically
+    
+    def clean_content(self):
+        """
+        Validate and clean the content field.
+        """
+        content = self.cleaned_data.get('content')
+        if len(content) < 3:
+            raise forms.ValidationError('Comment must be at least 3 characters long.')
+        if len(content) > 1000:
+            raise forms.ValidationError('Comment must not exceed 1000 characters.')
+        return content.strip()
