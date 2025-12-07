@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from taggit.forms import TagWidget
 from .models import Post, Comment
 
 
@@ -108,25 +109,13 @@ class PostForm(forms.ModelForm):
         help_text='Write the full content of your blog post'
     )
     
-    tags = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter tags separated by commas (e.g., python, django, web)'
-        }),
-        help_text='Add tags to categorize your post. Separate multiple tags with commas.'
-    )
-    
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
         # Note: author and published_date are excluded as they're set automatically
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Pre-populate tags field with existing tags if editing
-        if self.instance and self.instance.pk:
-            self.fields['tags'].initial = ', '.join([tag.name for tag in self.instance.tags.all()])
+        widgets = {
+            'tags': TagWidget(),
+        }
     
     def clean_title(self):
         """
@@ -145,25 +134,6 @@ class PostForm(forms.ModelForm):
         if len(content) < 20:
             raise forms.ValidationError('Content must be at least 20 characters long.')
         return content
-    
-    def save(self, commit=True):
-        """
-        Save the post and handle tag assignment using django-taggit.
-        """
-        instance = super().save(commit=False)
-        
-        if commit:
-            instance.save()
-            # Set tags using django-taggit's add method
-            tags_str = self.cleaned_data.get('tags', '').strip()
-            if tags_str:
-                instance.tags.set(*[tag.strip() for tag in tags_str.split(',') if tag.strip()])
-            else:
-                instance.tags.clear()
-            # Need to call save_m2m for many-to-many relationships
-            self.save_m2m()
-        
-        return instance
 
 
 class CommentForm(forms.ModelForm):
