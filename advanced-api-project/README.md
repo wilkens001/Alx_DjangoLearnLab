@@ -29,7 +29,7 @@ The project showcases:
 
 2. **Install required packages:**
    ```bash
-   pip install django djangorestframework
+   pip install django djangorestframework django-filter
    ```
 
 3. **Apply database migrations:**
@@ -279,32 +279,86 @@ The project now includes a complete set of generic views for CRUD operations on 
 
 **Features**:
 - Returns a list of all Book objects
-- Supports filtering by title, author, and publication_year
-- Supports ordering by title and publication_year
+- **Advanced Filtering**: Filter by title, author, and publication_year
+- **Text Search**: Search across title and author name fields
+- **Flexible Ordering**: Order by title and publication_year (ascending/descending)
 - Default ordering by title
 
-**Example Request**:
+**Basic Request**:
 ```bash
 curl -X GET http://127.0.0.1:8000/api/books/
 ```
 
+**Filtering Examples**:
+```bash
+# Filter by author
+curl -X GET "http://127.0.0.1:8000/api/books/?author=1"
+
+# Filter by publication year
+curl -X GET "http://127.0.0.1:8000/api/books/?publication_year=1997"
+
+# Multiple filters
+curl -X GET "http://127.0.0.1:8000/api/books/?author=1&publication_year=1997"
+```
+
+**Search Examples**:
+```bash
+# Search for books containing "Potter"
+curl -X GET "http://127.0.0.1:8000/api/books/?search=Potter"
+
+# Search by author name
+curl -X GET "http://127.0.0.1:8000/api/books/?search=Rowling"
+```
+
+**Ordering Examples**:
+```bash
+# Order by title (ascending)
+curl -X GET "http://127.0.0.1:8000/api/books/?ordering=title"
+
+# Order by publication year (descending - newest first)
+curl -X GET "http://127.0.0.1:8000/api/books/?ordering=-publication_year"
+```
+
+**Combined Query Example**:
+```bash
+# Search, filter, and order combined
+curl -X GET "http://127.0.0.1:8000/api/books/?search=Potter&author=1&ordering=-publication_year"
+```
+
 **Example Response**:
 ```json
-[
-    {
-        "id": 1,
-        "title": "Harry Potter and the Philosopher's Stone",
-        "publication_year": 1997,
-        "author": 1
-    },
-    {
-        "id": 2,
-        "title": "The Hobbit",
-        "publication_year": 1937,
-        "author": 2
-    }
-]
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "title": "Harry Potter and the Philosopher's Stone",
+            "publication_year": 1997,
+            "author": 1
+        },
+        {
+            "id": 2,
+            "title": "The Hobbit",
+            "publication_year": 1937,
+            "author": 2
+        }
+    ]
+}
 ```
+
+**Query Parameters Reference**:
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `author` | Integer | Filter by author ID | `?author=1` |
+| `title` | String | Filter by exact title | `?title=The Hobbit` |
+| `publication_year` | Integer | Filter by year | `?publication_year=1997` |
+| `search` | String | Search in title and author name | `?search=Potter` |
+| `ordering` | String | Order results (use `-` for descending) | `?ordering=-publication_year` |
+
+📚 **For detailed documentation on filtering, searching, and ordering, see [FILTERING_SEARCHING_ORDERING.md](FILTERING_SEARCHING_ORDERING.md)**
 
 #### 2. BookDetailView (DetailView)
 **Purpose**: Retrieve a single book by its ID

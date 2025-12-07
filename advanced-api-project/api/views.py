@@ -16,17 +16,19 @@ Views:
 
 from rest_framework import generics, permissions, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters import rest_framework as django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Book
 from .serializers import BookSerializer
 
 
 class BookListView(generics.ListAPIView):
     """
-    ListView for retrieving all books.
+    ListView for retrieving all books with advanced filtering, searching, and ordering.
     
     This view handles GET requests to retrieve a list of all Book instances
     in the database. It provides read-only access to both authenticated and
-    unauthenticated users.
+    unauthenticated users with comprehensive query capabilities.
     
     Endpoints:
         GET /books/ - Returns a list of all books
@@ -34,20 +36,50 @@ class BookListView(generics.ListAPIView):
     Permissions:
         - Read access: Anyone (authenticated or unauthenticated)
     
-    Filters:
-        - Supports searching by title
-        - Supports ordering by title and publication_year
+    Filtering:
+        - Filter by title: ?title=BookTitle
+        - Filter by author (ID): ?author=1
+        - Filter by publication_year: ?publication_year=2024
+        - Example: /api/books/?author=1&publication_year=2024
+    
+    Searching:
+        - Search in title and author name: ?search=keyword
+        - Searches across title and author__name fields
+        - Example: /api/books/?search=Rowling
+    
+    Ordering:
+        - Order by title: ?ordering=title (ascending) or ?ordering=-title (descending)
+        - Order by publication_year: ?ordering=publication_year or ?ordering=-publication_year
+        - Default ordering: title (ascending)
+        - Example: /api/books/?ordering=-publication_year
+    
+    Combined Usage:
+        - You can combine filtering, searching, and ordering
+        - Example: /api/books/?search=Potter&ordering=-publication_year&author=1
     
     Returns:
-        200 OK: List of book objects with all fields
+        200 OK: Paginated list of book objects with all fields
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for everyone, write for authenticated
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    
+    # Enable filtering, searching, and ordering backends
+    filter_backends = [
+        DjangoFilterBackend,  # For precise field filtering
+        filters.SearchFilter,  # For text-based searching
+        filters.OrderingFilter  # For result ordering
+    ]
+    
+    # Filtering configuration - allows exact matches on these fields
+    filterset_fields = ['title', 'author', 'publication_year']
+    
+    # Search configuration - allows partial matches across these fields
     search_fields = ['title', 'author__name']  # Search by title or author name
-    ordering_fields = ['title', 'publication_year']
-    ordering = ['title']  # Default ordering
+    
+    # Ordering configuration - allows sorting by these fields
+    ordering_fields = ['title', 'publication_year']  # Can order by title or publication year
+    ordering = ['title']  # Default ordering by title (ascending)
 
 
 class BookDetailView(generics.RetrieveAPIView):
