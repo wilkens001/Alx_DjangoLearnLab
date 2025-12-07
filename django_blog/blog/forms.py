@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -87,7 +87,7 @@ class PostForm(forms.ModelForm):
     """
     Form for creating and updating blog posts.
     
-    Includes title and content fields with custom styling.
+    Includes title, content, and tags fields with custom styling.
     The author field is automatically set in the view, not in the form.
     """
     title = forms.CharField(
@@ -108,10 +108,25 @@ class PostForm(forms.ModelForm):
         help_text='Write the full content of your blog post'
     )
     
+    tags = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter tags separated by commas (e.g., python, django, web)'
+        }),
+        help_text='Add tags to categorize your post. Separate multiple tags with commas.'
+    )
+    
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'tags']
         # Note: author and published_date are excluded as they're set automatically
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Pre-populate tags field with existing tags if editing
+        if self.instance and self.instance.pk:
+            self.fields['tags'].initial = ', '.join([tag.name for tag in self.instance.tags.all()])
     
     def clean_title(self):
         """
@@ -130,6 +145,47 @@ class PostForm(forms.ModelForm):
         if len(content) < 20:
             raise forms.ValidationError('Content must be at least 20 characters long.')
         return content
+    
+    def clean_tags(self):
+        """
+        Validate and clean the tags field.
+        Parse comma-separated tags and validate each tag.
+        """
+        tags_str = self.cleaned_data.get('tags', '').strip()
+        if not tags_str:
+            return []
+        
+        # Split by comma and clean each tag
+        tag_names = [tag.strip().lower() for tag in tags_str.split(',') if tag.strip()]
+        
+        # Validate tag names
+        for tag_name in tag_names:
+            if len(tag_name) > 50:
+                raise forms.ValidationError(f'Tag "{tag_name}" is too long. Maximum 50 characters.')
+            if len(tag_name) < 2:
+                raise forms.ValidationError(f'Tag "{tag_name}" is too short. Minimum 2 characters.')
+        
+        return tag_names
+    
+    def save(self, commit=True):
+        """
+        Save the post and handle tag creation/assignment.
+        """
+        instance = super().save(commit=commit)
+        
+        if commit:
+            # Get the cleaned tags
+            tag_names = self.cleaned_data.get('tags', [])
+            
+            # Clear existing tags
+            instance.tags.clear()
+            
+            # Create or get tags and add them to the post
+            for tag_name in tag_names:
+                tag, created = Tag.objects.get_or_create(name=tag_name)
+                instance.tags.add(tag)
+        
+        return instance
 
 
 class CommentForm(forms.ModelForm):

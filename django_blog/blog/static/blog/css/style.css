@@ -1132,3 +1132,426 @@ footer {
         padding: 2rem 1.5rem;
     }
 }
+
+/* ============================================================================
+   Tag and Search Functionality Styles
+   ============================================================================ */
+
+/* Header Search Bar */
+.header-search {
+    background: #34495e;
+    padding: 1rem 0;
+    border-top: 1px solid #2c3e50;
+}
+
+.quick-search-form {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.quick-search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 1rem;
+}
+
+.quick-search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.quick-search-btn {
+    padding: 0.75rem 1.5rem;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1.2rem;
+}
+
+.quick-search-btn:hover {
+    background: #2980b9;
+}
+
+/* Tag Badges */
+.post-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.tags-label {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background: #e8f4f8;
+    color: #2980b9;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: 1px solid #d1e7f5;
+}
+
+.tag-badge:hover {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
+
+.tag-active {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+
+/* Post Tags Section in Detail View */
+.post-tags-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.post-tags-section .tags-label {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.post-tags-section .tag-badge {
+    font-size: 1rem;
+    padding: 0.5rem 1.1rem;
+}
+
+/* Search Container */
+.search-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.search-header h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.search-info {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.search-form-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+}
+
+.search-form {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.search-btn {
+    padding: 1rem 2rem;
+    white-space: nowrap;
+}
+
+.search-icon {
+    margin-right: 0.5rem;
+}
+
+/* Search Results */
+.search-results {
+    margin-top: 2rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-results h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.no-results p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.no-results a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.no-results a:hover {
+    text-decoration: underline;
+}
+
+/* Search Tips */
+.search-tips {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.search-tips h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.search-tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.search-tips li {
+    padding: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: #555;
+}
+
+.search-tips li:before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #3498db;
+    font-weight: bold;
+}
+
+.search-tips a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.search-tips a:hover {
+    text-decoration: underline;
+}
+
+/* Tags Page */
+.tags-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.tags-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.tags-header h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.tags-subtitle {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.tags-cloud {
+    background: #fff;
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.tag-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+    min-width: 120px;
+}
+
+.tag-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.tag-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.tag-count {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.tags-actions {
+    text-align: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.no-tags {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.no-tags p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+/* Tag Posts Page */
+.tag-posts-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.tag-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 3rem 2rem;
+    border-radius: 8px;
+}
+
+.tag-header h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.tag-description {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tag-header .btn {
+    margin-top: 1rem;
+}
+
+/* Responsive Tag and Search Styles */
+@media (max-width: 768px) {
+    .header-search {
+        padding: 0.75rem 0;
+    }
+    
+    .quick-search-form {
+        margin: 0 1rem;
+    }
+    
+    .quick-search-input {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .quick-search-btn {
+        padding: 0.6rem 1rem;
+    }
+    
+    .search-input-group {
+        flex-direction: column;
+    }
+    
+    .search-btn {
+        width: 100%;
+    }
+    
+    .search-form-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .tags-cloud {
+        padding: 2rem 1rem;
+    }
+    
+    .tag-item {
+        min-width: 100px;
+        padding: 1rem 1.5rem;
+    }
+    
+    .tag-name {
+        font-size: 1rem;
+    }
+    
+    .tags-actions {
+        flex-direction: column;
+    }
+    
+    .tags-actions .btn {
+        width: 100%;
+    }
+    
+    .tag-header {
+        padding: 2rem 1rem;
+    }
+    
+    .post-tags {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

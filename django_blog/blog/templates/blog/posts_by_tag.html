@@ -1,0 +1,78 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="tag-posts-container">
+    <div class="tag-header">
+        <h2>Posts tagged with "{{ tag.name }}"</h2>
+        <p class="tag-description">
+            Showing <strong>{{ page_obj.paginator.count }}</strong> post{{ page_obj.paginator.count|pluralize }} with this tag
+        </p>
+        <a href="{% url 'tags-list' %}" class="btn btn-secondary">← View All Tags</a>
+    </div>
+
+    {% if posts %}
+        <div class="posts-list">
+            {% for post in posts %}
+                <div class="post-item">
+                    <div class="post-header">
+                        <h3><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h3>
+                        <div class="post-meta">
+                            <span class="author">
+                                <span class="icon-user"></span>
+                                By {{ post.author.username }}
+                            </span>
+                            <span class="date">
+                                <span class="icon-calendar"></span>
+                                {{ post.published_date|date:"F d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-excerpt">
+                        {{ post.content|truncatewords:50 }}
+                    </div>
+
+                    <!-- All Tags for this post -->
+                    {% if post.tags.all %}
+                        <div class="post-tags">
+                            <span class="tags-label">Tags:</span>
+                            {% for post_tag in post.tags.all %}
+                                <a href="{% url 'posts-by-tag' post_tag.name %}" 
+                                   class="tag-badge {% if post_tag.name == tag.name %}tag-active{% endif %}">
+                                    #{{ post_tag.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <a href="{% url 'post-detail' post.pk %}" class="read-more">Read More →</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="page-link">« First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link">‹ Previous</a>
+                {% endif %}
+
+                <span class="current-page">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next ›</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last »</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="no-posts">
+            <p>No posts found with this tag.</p>
+            <a href="{% url 'posts' %}" class="btn btn-primary">View All Posts</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

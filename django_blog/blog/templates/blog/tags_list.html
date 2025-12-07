@@ -1,0 +1,34 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="tags-container">
+    <div class="tags-header">
+        <h2>All Tags</h2>
+        <p class="tags-subtitle">
+            Browse <strong>{{ total_tags }}</strong> tag{{ total_tags|pluralize }} to discover interesting topics
+        </p>
+    </div>
+
+    {% if tags %}
+        <div class="tags-cloud">
+            {% for item in tags %}
+                <a href="{% url 'posts-by-tag' item.tag.name %}" class="tag-item">
+                    <span class="tag-name">#{{ item.tag.name }}</span>
+                    <span class="tag-count">{{ item.count }} post{{ item.count|pluralize }}</span>
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="tags-actions">
+            <a href="{% url 'posts' %}" class="btn btn-primary">View All Posts</a>
+            <a href="{% url 'search' %}" class="btn btn-secondary">Search Posts</a>
+        </div>
+    {% else %}
+        <div class="no-tags">
+            <p>No tags available yet.</p>
+            <p>Tags will appear here once posts are created with tags.</p>
+            <a href="{% url 'post-create' %}" class="btn btn-primary">Create a Post</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

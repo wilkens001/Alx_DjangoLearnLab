@@ -11,7 +11,8 @@ from django.views.generic import (
     DeleteView
 )
 from django.urls import reverse_lazy
-from .models import Post, Comment
+from django.db.models import Q
+from .models import Post, Comment, Tag
 from .forms import CustomUserCreationForm, UserUpdateForm, PostForm, CommentForm
 
 
@@ -325,3 +326,83 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         context['post'] = self.object.post
         context['title'] = 'Delete Comment'
         return context
+
+
+# ============================================================================
+# Search and Tag Views
+# ============================================================================
+
+def search_posts(request):
+    """
+    Search for blog posts based on title, content, or tags.
+    
+    Uses Django's Q objects for complex queries.
+    Searches across multiple fields and returns matching posts.
+    """
+    query = request.GET.get('q', '').strip()
+    posts = []
+    
+    if query:
+        # Use Q objects to search across multiple fields
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct().order_by('-published_date')
+    
+    context = {
+        'posts': posts,
+        'query': query,
+        'title': f'Search Results for "{query}"' if query else 'Search Posts',
+        'post_count': posts.count() if query else 0
+    }
+    
+    return render(request, 'blog/search_results.html', context)
+
+
+class PostByTagListView(ListView):
+    """
+    Display all posts associated with a specific tag.
+    
+    Filters posts by the tag name provided in the URL.
+    """
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        """Filter posts by the tag name from URL."""
+        self.tag = get_object_or_404(Tag, name=self.kwargs.get('tag_name'))
+        return Post.objects.filter(tags=self.tag).order_by('-published_date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        context['title'] = f'Posts tagged with "{self.tag.name}"'
+        return context
+
+
+def tags_list(request):
+    """
+    Display a list of all tags with post counts.
+    
+    Shows all tags ordered alphabetically with the number of posts for each tag.
+    """
+    tags = Tag.objects.all().order_by('name')
+    
+    # Add post count for each tag
+    tags_with_counts = []
+    for tag in tags:
+        tags_with_counts.append({
+            'tag': tag,
+            'count': tag.posts.count()
+        })
+    
+    context = {
+        'tags': tags_with_counts,
+        'title': 'All Tags',
+        'total_tags': len(tags_with_counts)
+    }
+    
+    return render(request, 'blog/tags_list.html', context)

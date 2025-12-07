@@ -28,6 +28,22 @@ A full-featured blog application built with Django 5.0+, featuring user authenti
 - **Comment Count:** Display number of comments on each post
 - **Timestamps:** Automatic tracking of creation and update times
 
+### 🏷️ Tagging System
+- **Tag Posts:** Categorize posts with multiple tags
+- **Tag Management:** Create and manage tags through post forms
+- **Tag Cloud:** Browse all tags with post counts
+- **Filter by Tag:** View all posts associated with a specific tag
+- **Auto-creation:** New tags are automatically created when needed
+- **Many-to-Many:** Flexible tag-post relationships
+
+### 🔍 Search Functionality
+- **Multi-field Search:** Search across titles, content, and tags
+- **Case-Insensitive:** Search works regardless of capitalization
+- **Q Objects:** Complex query support for advanced searches
+- **Quick Search:** Header search bar available on all pages
+- **Full Search Page:** Dedicated search interface with tips
+- **Result Display:** Clear results with post excerpts and metadata
+
 ### 🎨 User Interface
 - **Responsive Design:** Mobile-friendly layout that works on all devices
 - **Modern Styling:** Clean, professional CSS with hover effects and transitions
@@ -35,15 +51,8 @@ A full-featured blog application built with Django 5.0+, featuring user authenti
 - **Form Validation:** Client-side and server-side validation with helpful error messages
 - **Alert Messages:** Success and error messages for user actions
 - **Pagination:** Easy navigation through multiple pages of posts
-
-### User Authentication System
-- **User Registration**: Custom registration form with email validation
-- **User Login**: Secure authentication with session management
-- **User Logout**: Secure session termination
-- **Profile Management**: View and edit user profile information
-- **Password Security**: PBKDF2 hashing with salt
-- **CSRF Protection**: All forms protected against CSRF attacks
-- **Form Validation**: Comprehensive server-side validation
+- **Tag Badges:** Visual tag display with interactive elements
+- **Search Integration:** Seamless search experience across the site
 
 ## Installation
 
@@ -131,10 +140,13 @@ django_blog/
 │   │   ├── post_form.html         # Create/edit post form
 │   │   ├── post_confirm_delete.html   # Post deletion confirmation
 │   │   ├── comment_form.html      # Comment create/edit form
-│   │   └── comment_confirm_delete.html # Comment deletion confirmation
+│   │   ├── comment_confirm_delete.html # Comment deletion confirmation
+│   │   ├── search_results.html    # Search results page
+│   │   ├── posts_by_tag.html      # Posts filtered by tag
+│   │   └── tags_list.html         # All tags cloud
 │   ├── admin.py                   # Admin configuration
 │   ├── forms.py                   # Form definitions
-│   ├── models.py                  # Database models
+│   ├── models.py                  # Database models (Post, Comment, Tag)
 │   ├── urls.py                    # URL routing
 │   └── views.py                   # View logic
 ├── django_blog/                   # Project settings
@@ -144,10 +156,17 @@ django_blog/
 ├── db.sqlite3                     # SQLite database
 ├── manage.py                      # Django management script
 ├── README.md                      # This file
-└── COMMENT_SYSTEM_DOCUMENTATION.md # Detailed comment system docs
+├── COMMENT_SYSTEM_DOCUMENTATION.md # Detailed comment system docs
+└── TAG_AND_SEARCH_DOCUMENTATION.md # Tagging and search features docs
 ```
 
 ## Database Models
+
+### Tag Model
+```python
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+```
 
 ### Post Model
 ```python
@@ -156,6 +175,7 @@ class Post(models.Model):
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
 ```
 
 ### Comment Model
@@ -189,6 +209,11 @@ class Comment(models.Model):
 - `/comment/<int:pk>/update/` - Edit comment (requires ownership)
 - `/comment/<int:pk>/delete/` - Delete comment (requires ownership)
 
+### Search and Tags
+- `/search/` - Search posts by title, content, or tags
+- `/tags/` - View all tags with post counts
+- `/tags/<str:tag_name>/` - View posts filtered by specific tag
+
 ## Usage Guide
 
 ### For Visitors (Anonymous Users)
@@ -199,23 +224,28 @@ class Comment(models.Model):
 
 ### For Registered Users
 1. **Create posts:** Click "New Post" to write a blog post
-2. **Manage posts:** Edit or delete your own posts
-3. **Add comments:** Comment on any post using the inline form
-4. **Edit comments:** Update your comments anytime
-5. **Delete comments:** Remove your comments with confirmation
-6. **Update profile:** Change your username and email in profile settings
+2. **Add tags:** Enter comma-separated tags when creating posts
+3. **Manage posts:** Edit or delete your own posts
+4. **Add comments:** Comment on any post using the inline form
+5. **Edit comments:** Update your comments anytime
+6. **Delete comments:** Remove your comments with confirmation
+7. **Search posts:** Use the search bar to find posts by keyword or tag
+8. **Browse by tag:** Click any tag to view related posts
+9. **Update profile:** Change your username and email in profile settings
 
 ### For Administrators
 1. **Access admin panel:** Go to `/admin/` and login with superuser credentials
 2. **Manage users:** Create, edit, or delete user accounts
-3. **Moderate content:** View, edit, or delete any posts or comments
-4. **View analytics:** See post and comment statistics
+3. **Manage tags:** View, edit, or merge tags
+4. **Moderate content:** View, edit, or delete any posts or comments
+5. **View analytics:** See post, comment, and tag statistics
 
 ## Form Validations
 
 ### Post Form
 - **Title:** Required, minimum 5 characters
 - **Content:** Required, minimum 20 characters
+- **Tags:** Optional, comma-separated, 2-50 characters per tag
 
 ### Comment Form
 - **Content:** Required, minimum 3 characters, maximum 1000 characters
@@ -225,6 +255,9 @@ class Comment(models.Model):
 - **Email:** Required, valid email format
 - **Password:** Required, minimum 8 characters with complexity requirements
 - **Password Confirmation:** Must match password
+
+### Search Form
+- **Query:** Optional, searches across titles, content, and tags
 
 ## Security Features
 
@@ -250,6 +283,7 @@ class Comment(models.Model):
 
 For detailed information about specific features:
 - [Comment System Documentation](COMMENT_SYSTEM_DOCUMENTATION.md) - Comprehensive guide to the comment system
+- [Tag and Search Documentation](TAG_AND_SEARCH_DOCUMENTATION.md) - Complete guide to tagging and search features
 
 ## Troubleshooting
 
