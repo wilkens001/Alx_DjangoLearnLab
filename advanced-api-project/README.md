@@ -727,6 +727,92 @@ GenericAPIView (base)
 └── DestroyAPIView (BookDeleteView)
 ```
 
+## Testing
+
+The project includes comprehensive unit tests for all API endpoints, covering CRUD operations, filtering, searching, ordering, authentication, and permissions.
+
+### Running Tests
+
+```bash
+# Run all tests
+python manage.py test api
+
+# Run with verbose output
+python manage.py test api --verbosity=2
+
+# Run specific test class
+python manage.py test api.test_views.BookAPITestCase
+```
+
+### Test Coverage
+
+| Category | Tests | Description |
+|----------|-------|-------------|
+| **CRUD Operations** | 11 | Create, Read, Update, Delete |
+| **Filtering** | 5 | Filter by author, title, year |
+| **Searching** | 5 | Search in titles and authors |
+| **Ordering** | 5 | Order by title and year |
+| **Permissions** | 8 | Authentication and access control |
+| **Combined Features** | 3 | Multiple features together |
+| **TOTAL** | **37** | **Complete coverage** |
+
+### Expected Output
+
+```
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.....................................
+----------------------------------------------------------------------
+Ran 37 tests in 2.345s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+### Test Documentation
+
+For comprehensive testing documentation, see:
+- 📋 [TESTING_DOCUMENTATION.md](TESTING_DOCUMENTATION.md) - Complete testing guide
+- ⚡ [TEST_COMMANDS.md](TEST_COMMANDS.md) - Quick command reference
+
+### What's Tested
+
+✅ **CRUD Operations**
+- Creating books (authenticated users only)
+- Reading books (public access)
+- Updating books (authenticated users only)
+- Deleting books (authenticated users only)
+- Data validation (future publication year rejection)
+
+✅ **Filtering**
+- Filter by author ID
+- Filter by publication year
+- Filter by title
+- Multiple filters combined
+
+✅ **Searching**
+- Search in book titles
+- Search in author names
+- Case-insensitive search
+- Partial matching
+
+✅ **Ordering**
+- Order by title (A-Z and Z-A)
+- Order by publication year (oldest/newest first)
+- Default ordering
+
+✅ **Permissions & Security**
+- Unauthenticated read access (allowed)
+- Authenticated write access (required)
+- Token authentication
+- Invalid token rejection
+- Permission denial for unauthorized users
+
+✅ **Combined Features**
+- Filter + Order
+- Search + Order
+- Filter + Search + Order
+
 ### Next Steps
 
 To further extend this project, consider:
@@ -742,18 +828,20 @@ To further extend this project, consider:
    - API versioning
 
 3. **Improving functionality**:
-   - Search functionality
-   - Pagination for large datasets
-   - More advanced filtering
+   - Advanced filtering with django-filter
+   - Custom pagination classes
+   - API throttling
 
-4. **Adding tests**:
-   - Unit tests for views
-   - Integration tests for API endpoints
-   - Permission tests
+4. **Expanding tests**:
+   - Integration tests
+   - Performance tests
+   - Load testing
+   - Test coverage reports
 
 5. **Documentation**:
    - API documentation with Swagger/OpenAPI
    - Interactive API browser
+   - Postman collections
 
 ## Resources
 
