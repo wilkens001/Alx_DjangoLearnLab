@@ -8,8 +8,8 @@ URL Patterns:
     - /books/ - ListView: Retrieves all books (GET)
     - /books/<int:pk>/ - DetailView: Retrieves a single book by ID (GET)
     - /books/create/ - CreateView: Creates a new book (POST)
-    - /books/<int:pk>/update/ - UpdateView: Updates an existing book (PUT/PATCH)
-    - /books/<int:pk>/delete/ - DeleteView: Deletes a book (DELETE)
+    - /books/update/ - UpdateView: Updates an existing book (PUT/PATCH)
+    - /books/delete/ - DeleteView: Deletes a book (DELETE)
 
 Authentication:
     - Read operations (ListView, DetailView): Open to all users
@@ -19,9 +19,9 @@ Usage Examples:
     GET /books/ - Returns list of all books
     GET /books/1/ - Returns details of book with ID 1
     POST /books/create/ - Creates a new book (requires auth)
-    PUT /books/1/update/ - Updates book with ID 1 (requires auth)
-    PATCH /books/1/update/ - Partially updates book with ID 1 (requires auth)
-    DELETE /books/1/delete/ - Deletes book with ID 1 (requires auth)
+    PUT /books/update/ - Updates a book (requires auth)
+    PATCH /books/update/ - Partially updates a book (requires auth)
+    DELETE /books/delete/ - Deletes a book (requires auth)
 """
 
 from django.urls import path
@@ -56,14 +56,14 @@ urlpatterns = [
     path('books/create/', BookCreateView.as_view(), name='book-create'),
     
     # Update an existing book - PUT/PATCH request
-    # Endpoint: /books/<int:pk>/update/
+    # Endpoint: /books/update/
     # Permission: IsAuthenticated (requires authentication)
     # Returns: Updated book object with 200 status
-    path('books/<int:pk>/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/update/', BookUpdateView.as_view(), name='book-update'),
     
     # Delete a book - DELETE request
-    # Endpoint: /books/<int:pk>/delete/
+    # Endpoint: /books/delete/
     # Permission: IsAuthenticated (requires authentication)
     # Returns: 204 No Content on successful deletion
-    path('books/<int:pk>/delete/', BookDeleteView.as_view(), name='book-delete'),
+    path('books/delete/', BookDeleteView.as_view(), name='book-delete'),
 ]

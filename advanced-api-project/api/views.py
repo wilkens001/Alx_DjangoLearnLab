@@ -43,7 +43,7 @@ class BookListView(generics.ListAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # Read-only for everyone
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for everyone, write for authenticated
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'author__name']  # Search by title or author name
     ordering_fields = ['title', 'publication_year']
@@ -73,7 +73,7 @@ class BookDetailView(generics.RetrieveAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # Read-only for everyone
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for everyone, write for authenticated
 
 
 class BookCreateView(generics.CreateAPIView):
