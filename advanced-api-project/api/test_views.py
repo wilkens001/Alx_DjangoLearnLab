@@ -55,6 +55,9 @@ class BookAPITestCase(APITestCase):
         # Create authentication token for the user
         self.token = Token.objects.create(user=self.user)
         
+        # Login the user for session-based authentication
+        self.client.login(username='testuser', password='testpass123')
+        
         # Create test authors
         self.author1 = Author.objects.create(name='J.K. Rowling')
         self.author2 = Author.objects.create(name='J.R.R. Tolkien')
@@ -623,6 +626,9 @@ class BookPermissionsTestCase(APITestCase):
             password='authpass123'
         )
         self.token = Token.objects.create(user=self.user)
+        
+        # Login the user for session-based authentication
+        self.client.login(username='authuser', password='authpass123')
         
         # Create test data
         author = Author.objects.create(name='Test Author')
