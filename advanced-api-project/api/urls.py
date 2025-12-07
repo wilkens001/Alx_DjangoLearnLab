@@ -56,14 +56,14 @@ urlpatterns = [
     path('books/create/', BookCreateView.as_view(), name='book-create'),
     
     # Update an existing book - PUT/PATCH request
-    # Endpoint: /books/update/
+    # Endpoint: /books/update/<int:pk>/
     # Permission: IsAuthenticated (requires authentication)
     # Returns: Updated book object with 200 status
-    path('books/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/update/<int:pk>/', BookUpdateView.as_view(), name='book-update'),
     
     # Delete a book - DELETE request
-    # Endpoint: /books/delete/
+    # Endpoint: /books/delete/<int:pk>/
     # Permission: IsAuthenticated (requires authentication)
     # Returns: 204 No Content on successful deletion
-    path('books/delete/', BookDeleteView.as_view(), name='book-delete'),
+    path('books/delete/<int:pk>/', BookDeleteView.as_view(), name='book-delete'),
 ]

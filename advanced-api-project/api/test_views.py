@@ -157,6 +157,9 @@ class BookAPITestCase(APITestCase):
             - Status code is 401 UNAUTHORIZED
             - Book is not created in database
         """
+        # Logout to test unauthenticated access
+        self.client.logout()
+        
         data = {
             'title': 'Unauthorized Book',
             'publication_year': 2024,
@@ -206,7 +209,7 @@ class BookAPITestCase(APITestCase):
             'author': self.author1.id
         }
         
-        response = self.client.put(f'/api/books/update/', data, format='json')
+        response = self.client.put(f'/api/books/update/{self.book1.id}/', data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Updated Title')
@@ -223,7 +226,7 @@ class BookAPITestCase(APITestCase):
         
         data = {'title': 'Partially Updated Title'}
         
-        response = self.client.patch(f'/api/books/update/', data, format='json')
+        response = self.client.patch(f'/api/books/update/{self.book1.id}/', data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Partially Updated Title')
@@ -235,13 +238,16 @@ class BookAPITestCase(APITestCase):
         Verifies:
             - Status code is 401 UNAUTHORIZED
         """
+        # Logout to test unauthenticated access
+        self.client.logout()
+        
         data = {
             'title': 'Unauthorized Update',
             'publication_year': 1997,
             'author': self.author1.id
         }
         
-        response = self.client.put(f'/api/books/update/', data, format='json')
+        response = self.client.put(f'/api/books/update/{self.book1.id}/', data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
@@ -256,7 +262,7 @@ class BookAPITestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
         
         initial_count = Book.objects.count()
-        response = self.client.delete(f'/api/books/delete/')
+        response = self.client.delete(f'/api/books/delete/{self.book1.id}/')
         
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Book.objects.count(), initial_count - 1)
@@ -269,8 +275,11 @@ class BookAPITestCase(APITestCase):
             - Status code is 401 UNAUTHORIZED
             - Book is not deleted
         """
+        # Logout to test unauthenticated access
+        self.client.logout()
+        
         initial_count = Book.objects.count()
-        response = self.client.delete(f'/api/books/delete/')
+        response = self.client.delete(f'/api/books/delete/{self.book1.id}/')
         
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Book.objects.count(), initial_count)
@@ -712,7 +721,7 @@ class BookPermissionsTestCase(APITestCase):
             'author': self.book.author.id
         }
         
-        response = self.client.put(f'/api/books/update/', data, format='json')
+        response = self.client.put(f'/api/books/update/{self.book.id}/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_unauthenticated_update_denied(self):
@@ -722,13 +731,16 @@ class BookPermissionsTestCase(APITestCase):
         Verifies:
             - Update endpoint returns 401 UNAUTHORIZED
         """
+        # Logout to test unauthenticated access
+        self.client.logout()
+        
         data = {
             'title': 'Unauthorized Update',
             'publication_year': 2020,
             'author': self.book.author.id
         }
         
-        response = self.client.put(f'/api/books/update/', data, format='json')
+        response = self.client.put(f'/api/books/update/{self.book.id}/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
     def test_authenticated_delete_access(self):
@@ -741,7 +753,7 @@ class BookPermissionsTestCase(APITestCase):
         """
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
         
-        response = self.client.delete(f'/api/books/delete/')
+        response = self.client.delete(f'/api/books/delete/{self.book.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
     
     def test_unauthenticated_delete_denied(self):
@@ -751,8 +763,11 @@ class BookPermissionsTestCase(APITestCase):
         Verifies:
             - Delete endpoint returns 401 UNAUTHORIZED
         """
+        # Logout to test unauthenticated access
+        self.client.logout()
+        
         initial_count = Book.objects.count()
-        response = self.client.delete(f'/api/books/delete/')
+        response = self.client.delete(f'/api/books/delete/{self.book.id}/')
         
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Book.objects.count(), initial_count)
