@@ -1,30 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-
-
-class Tag(models.Model):
-    """
-    Tag model for categorizing blog posts.
-    
-    Fields:
-        name: The name of the tag (unique, max 50 characters)
-    """
-    name = models.CharField(max_length=50, unique=True)
-    
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Tag'
-        verbose_name_plural = 'Tags'
-    
-    def __str__(self):
-        return self.name
-    
-    def get_absolute_url(self):
-        """
-        Return the URL to view all posts with this tag.
-        """
-        return reverse('posts-by-tag', kwargs={'tag_name': self.name})
+from taggit.managers import TaggableManager
 
 
 class Post(models.Model):
@@ -36,12 +13,13 @@ class Post(models.Model):
         content: The main content of the blog post
         published_date: The date and time when the post was published
         author: The user who authored the post
+        tags: Tags for categorizing posts (using django-taggit)
     """
     title = models.CharField(max_length=200)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
+    tags = TaggableManager()
 
     class Meta:
         ordering = ['-published_date']

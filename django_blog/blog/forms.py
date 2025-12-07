@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Comment, Tag
+from .models import Post, Comment
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -146,44 +146,22 @@ class PostForm(forms.ModelForm):
             raise forms.ValidationError('Content must be at least 20 characters long.')
         return content
     
-    def clean_tags(self):
-        """
-        Validate and clean the tags field.
-        Parse comma-separated tags and validate each tag.
-        """
-        tags_str = self.cleaned_data.get('tags', '').strip()
-        if not tags_str:
-            return []
-        
-        # Split by comma and clean each tag
-        tag_names = [tag.strip().lower() for tag in tags_str.split(',') if tag.strip()]
-        
-        # Validate tag names
-        for tag_name in tag_names:
-            if len(tag_name) > 50:
-                raise forms.ValidationError(f'Tag "{tag_name}" is too long. Maximum 50 characters.')
-            if len(tag_name) < 2:
-                raise forms.ValidationError(f'Tag "{tag_name}" is too short. Minimum 2 characters.')
-        
-        return tag_names
-    
     def save(self, commit=True):
         """
-        Save the post and handle tag creation/assignment.
+        Save the post and handle tag assignment using django-taggit.
         """
-        instance = super().save(commit=commit)
+        instance = super().save(commit=False)
         
         if commit:
-            # Get the cleaned tags
-            tag_names = self.cleaned_data.get('tags', [])
-            
-            # Clear existing tags
-            instance.tags.clear()
-            
-            # Create or get tags and add them to the post
-            for tag_name in tag_names:
-                tag, created = Tag.objects.get_or_create(name=tag_name)
-                instance.tags.add(tag)
+            instance.save()
+            # Set tags using django-taggit's add method
+            tags_str = self.cleaned_data.get('tags', '').strip()
+            if tags_str:
+                instance.tags.set(*[tag.strip() for tag in tags_str.split(',') if tag.strip()])
+            else:
+                instance.tags.clear()
+            # Need to call save_m2m for many-to-many relationships
+            self.save_m2m()
         
         return instance
 

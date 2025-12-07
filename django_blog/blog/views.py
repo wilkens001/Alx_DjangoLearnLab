@@ -12,7 +12,8 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .models import Post, Comment, Tag
+from taggit.models import Tag
+from .models import Post, Comment
 from .forms import CustomUserCreationForm, UserUpdateForm, PostForm, CommentForm
 
 
