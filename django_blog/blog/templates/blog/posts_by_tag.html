@@ -37,7 +37,7 @@
                         <div class="post-tags">
                             <span class="tags-label">Tags:</span>
                             {% for post_tag in post.tags.all %}
-                                <a href="{% url 'posts-by-tag' post_tag.name %}" 
+                                <a href="{% url 'posts-by-tag' post_tag.slug %}" 
                                    class="tag-badge {% if post_tag.name == tag.name %}tag-active{% endif %}">
                                     #{{ post_tag.name }}
                                 </a>

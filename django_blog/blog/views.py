@@ -365,7 +365,7 @@ class PostByTagListView(ListView):
     """
     Display all posts associated with a specific tag.
     
-    Filters posts by the tag name provided in the URL.
+    Filters posts by the tag slug provided in the URL.
     """
     model = Post
     template_name = 'blog/posts_by_tag.html'
@@ -373,8 +373,8 @@ class PostByTagListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        """Filter posts by the tag name from URL."""
-        self.tag = get_object_or_404(Tag, name=self.kwargs.get('tag_name'))
+        """Filter posts by the tag slug from URL."""
+        self.tag = get_object_or_404(Tag, slug=self.kwargs.get('tag_slug'))
         return Post.objects.filter(tags=self.tag).order_by('-published_date')
     
     def get_context_data(self, **kwargs):

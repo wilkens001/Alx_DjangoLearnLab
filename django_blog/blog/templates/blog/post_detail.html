@@ -33,7 +33,7 @@
         <div class="post-tags-section">
             <span class="tags-label">Tagged with:</span>
             {% for tag in post.tags.all %}
-                <a href="{% url 'posts-by-tag' tag.name %}" class="tag-badge">
+                <a href="{% url 'posts-by-tag' tag.slug %}" class="tag-badge">
                     #{{ tag.name }}
                 </a>
             {% endfor %}

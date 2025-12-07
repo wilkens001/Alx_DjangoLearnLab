@@ -12,7 +12,7 @@
     {% if tags %}
         <div class="tags-cloud">
             {% for item in tags %}
-                <a href="{% url 'posts-by-tag' item.tag.name %}" class="tag-item">
+                <a href="{% url 'posts-by-tag' item.tag.slug %}" class="tag-item">
                     <span class="tag-name">#{{ item.tag.name }}</span>
                     <span class="tag-count">{{ item.count }} post{{ item.count|pluralize }}</span>
                 </a>
