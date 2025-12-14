@@ -40,7 +40,7 @@ urlpatterns = [
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
     
     # Follow user endpoint (requires authentication)
-    # POST /api/follow/<int:user_id>/
+    # POST /api/follow/<int:user_id>/ followuser and unfollowuser
     path('follow/<int:user_id>/', follow_user, name='follow-user'),
     
     # Unfollow user endpoint (requires authentication)

@@ -17,7 +17,7 @@ app_name = 'posts'
 
 urlpatterns = [
     # Feed endpoint - must come before router URLs to avoid conflicts
-    # GET /api/feed/
+    # Add a route in posts/urls.py for the feed endpoint, such as /feed/.
     path('feed/', FeedView.as_view(), name='feed'),
     
     # Include all router URLs

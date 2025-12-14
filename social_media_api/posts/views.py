@@ -119,7 +119,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class FeedView(generics.ListAPIView):
     """
-    Feed view that displays posts from users the current user follows.
+    Create a view in the posts app that generates a feed based on the posts
+    from users that the current user follows. This view should return posts ordered by
+    creation date, showing the most recent posts at the top.
     
     GET /api/feed/
     
