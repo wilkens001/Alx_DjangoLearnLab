@@ -10,7 +10,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from .models import Post, Comment
+from .models import Post, Comment, Like
 
 User = get_user_model()
 
@@ -339,3 +339,134 @@ class FeedTestCase(APITestCase):
         self.assertIn('created_at', post)
         self.assertIn('updated_at', post)
         self.assertIn('comments', post)
+
+
+class LikeTestCase(APITestCase):
+    """Test cases for like functionality."""
+    
+    def setUp(self):
+        """Set up test users and posts."""
+        self.client = APIClient()
+        
+        # Create test users
+        self.user1 = User.objects.create_user(
+            username='user1',
+            email='user1@example.com',
+            password='testpass123'
+        )
+        self.user2 = User.objects.create_user(
+            username='user2',
+            email='user2@example.com',
+            password='testpass123'
+        )
+        
+        # Create test posts
+        self.post1 = Post.objects.create(
+            author=self.user1,
+            title='Post 1',
+            content='Content 1'
+        )
+        self.post2 = Post.objects.create(
+            author=self.user2,
+            title='Post 2',
+            content='Content 2'
+        )
+        
+        # Authenticate user1
+        self.token = Token.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+    
+    def test_like_post_success(self):
+        """Test successfully liking a post."""
+        url = f'/api/posts/{self.post2.id}/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('message', response.data)
+        self.assertTrue(Like.objects.filter(user=self.user1, post=self.post2).exists())
+    
+    def test_cannot_like_post_twice(self):
+        """Test that a user cannot like the same post twice."""
+        # First like
+        Like.objects.create(user=self.user1, post=self.post2)
+        
+        # Try to like again
+        url = f'/api/posts/{self.post2.id}/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+    
+    def test_unlike_post_success(self):
+        """Test successfully unliking a post."""
+        # First like the post
+        Like.objects.create(user=self.user1, post=self.post2)
+        
+        # Now unlike
+        url = f'/api/posts/{self.post2.id}/unlike/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('message', response.data)
+        self.assertFalse(Like.objects.filter(user=self.user1, post=self.post2).exists())
+    
+    def test_cannot_unlike_not_liked_post(self):
+        """Test that a user cannot unlike a post they haven't liked."""
+        url = f'/api/posts/{self.post2.id}/unlike/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+    
+    def test_like_nonexistent_post(self):
+        """Test liking a post that doesn't exist."""
+        url = '/api/posts/99999/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_like_requires_authentication(self):
+        """Test that liking requires authentication."""
+        # Remove authentication
+        self.client.credentials()
+        
+        url = f'/api/posts/{self.post2.id}/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    
+    def test_like_creates_notification(self):
+        """Test that liking a post creates a notification for the post author."""
+        from notifications.models import Notification
+        
+        url = f'/api/posts/{self.post2.id}/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        # Check notification was created
+        notification = Notification.objects.filter(
+            recipient=self.post2.author,
+            actor=self.user1,
+            verb='liked your post'
+        ).first()
+        
+        self.assertIsNotNone(notification)
+        self.assertFalse(notification.read)
+    
+    def test_like_own_post_no_notification(self):
+        """Test that liking own post doesn't create a notification."""
+        from notifications.models import Notification
+        
+        url = f'/api/posts/{self.post1.id}/like/'
+        response = self.client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        # Check no notification was created
+        notification_count = Notification.objects.filter(
+            recipient=self.user1,
+            actor=self.user1
+        ).count()
+        
+        self.assertEqual(notification_count, 0)
