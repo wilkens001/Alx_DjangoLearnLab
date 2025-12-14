@@ -8,6 +8,7 @@ to users and appropriate fields for content management.
 from django.db import models
 from django.contrib.auth import get_user_model
 
+# Example usage: models.TextField() for large text content
 User = get_user_model()
 
 

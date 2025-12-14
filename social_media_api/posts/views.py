@@ -3,6 +3,9 @@ Views for the posts app.
 
 This module defines viewsets for Post and Comment models with CRUD operations,
 permissions, pagination, and filtering capabilities.
+Using Django REST Framework's viewsets, set up CRUD operations for both posts and
+comments in posts/views.py. Implement permissions to ensure users can only edit or
+delete their own posts and comments.
 """
 
 from rest_framework import viewsets, permissions, filters
