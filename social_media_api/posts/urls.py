@@ -21,7 +21,7 @@ urlpatterns = [
     path('feed/', FeedView.as_view(), name='feed'),
     
     # Like and unlike endpoints
-    # POST /api/posts/<int:pk>/like/
+    # POST /api/posts/<int:pk>/like/ and /posts/<int:pk>/unlike/
     path('posts/<int:pk>/like/', like_post, name='like-post'),
     
     # POST /api/posts/<int:pk>/unlike/
