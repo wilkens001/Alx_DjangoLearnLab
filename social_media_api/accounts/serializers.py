@@ -128,3 +128,20 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'email': {'required': False},
         }
+
+
+class UserFollowSerializer(serializers.ModelSerializer):
+    """
+    Simplified serializer for user follow operations.
+    
+    Used in follow/unfollow responses to show basic user info.
+    """
+    
+    followers_count = serializers.IntegerField(read_only=True)
+    following_count = serializers.IntegerField(read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'bio', 'profile_picture', 
+                  'followers_count', 'following_count']
+        read_only_fields = ['id', 'username']

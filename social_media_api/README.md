@@ -27,6 +27,11 @@ This Social Media API provides a robust backend for a social media platform, fea
 - **Profile Endpoints**: View and update user profiles
 - **User Discovery**: List and search for other users
 
+### Social Features
+- **Follow/Unfollow System**: Users can follow and unfollow each other
+- **Personalized Feed**: View posts from users you follow
+- **Followers & Following**: Track follower counts and relationships
+
 ### Posts and Comments
 - **Create Posts**: Authenticated users can create posts
 - **CRUD Operations**: Full create, read, update, delete for posts and comments
@@ -213,6 +218,98 @@ The API will be available at `http://127.0.0.1:8000/`
 - **Method**: `GET`
 - **Authentication**: Optional
 - **Success Response** (200 OK): Returns user profile data
+
+### Follow Management Endpoints
+
+#### Follow a User
+- **URL**: `/api/follow/<user_id>/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+- **Headers**:
+  ```
+  Authorization: Token your_token_here
+  ```
+- **Success Response** (200 OK):
+  ```json
+  {
+    "message": "You are now following username",
+    "user": {
+      "id": 2,
+      "username": "username",
+      "bio": "User bio",
+      "profile_picture": "/media/profile_pictures/user.jpg",
+      "followers_count": 10,
+      "following_count": 5
+    }
+  }
+  ```
+- **Error Responses**:
+  - `400 Bad Request`: Cannot follow yourself or already following
+  - `404 Not Found`: User doesn't exist
+
+#### Unfollow a User
+- **URL**: `/api/unfollow/<user_id>/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+- **Headers**:
+  ```
+  Authorization: Token your_token_here
+  ```
+- **Success Response** (200 OK):
+  ```json
+  {
+    "message": "You have unfollowed username",
+    "user": {
+      "id": 2,
+      "username": "username",
+      "bio": "User bio",
+      "profile_picture": "/media/profile_pictures/user.jpg",
+      "followers_count": 9,
+      "following_count": 5
+    }
+  }
+  ```
+- **Error Response**:
+  - `400 Bad Request`: Not following this user
+
+### Feed Endpoint
+
+#### Get Personalized Feed
+- **URL**: `/api/feed/`
+- **Method**: `GET`
+- **Authentication**: Required (Token)
+- **Headers**:
+  ```
+  Authorization: Token your_token_here
+  ```
+- **Query Parameters**:
+  - `page`: Page number (optional, default: 1)
+- **Success Response** (200 OK):
+  ```json
+  {
+    "count": 25,
+    "next": "http://127.0.0.1:8000/api/feed/?page=2",
+    "previous": null,
+    "results": [
+      {
+        "id": 1,
+        "author": {
+          "id": 2,
+          "username": "johndoe",
+          "bio": "Software developer",
+          "profile_picture": "/media/profile_pictures/john.jpg"
+        },
+        "title": "My First Post",
+        "content": "This is the content of my first post...",
+        "created_at": "2025-12-14T10:30:00Z",
+        "updated_at": "2025-12-14T10:30:00Z",
+        "comment_count": 3,
+        "comments": [...]
+      }
+    ]
+  }
+  ```
+- **Description**: Returns posts from users you follow, ordered by creation date (newest first)
 
 ## Authentication
 

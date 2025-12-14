@@ -10,7 +10,9 @@ from .views import (
     UserLoginView,
     UserProfileView,
     UserListView,
-    UserDetailView
+    UserDetailView,
+    follow_user,
+    unfollow_user
 )
 
 app_name = 'accounts'
@@ -36,4 +38,12 @@ urlpatterns = [
     # User detail endpoint
     # GET /api/users/<int:pk>/
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    
+    # Follow user endpoint (requires authentication)
+    # POST /api/follow/<int:user_id>/
+    path('follow/<int:user_id>/', follow_user, name='follow-user'),
+    
+    # Unfollow user endpoint (requires authentication)
+    # POST /api/unfollow/<int:user_id>/
+    path('unfollow/<int:user_id>/', unfollow_user, name='unfollow-user'),
 ]

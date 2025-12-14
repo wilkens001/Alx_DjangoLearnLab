@@ -8,7 +8,7 @@ comments in posts/views.py. Implement permissions to ensure users can only edit 
 delete their own posts and comments.
 """
 
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -115,3 +115,41 @@ class CommentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(post_id=post_id)
         
         return queryset
+
+
+class FeedView(generics.ListAPIView):
+    """
+    Feed view that displays posts from users the current user follows.
+    
+    GET /api/feed/
+    
+    Returns posts from followed users, ordered by creation date (most recent first).
+    Only authenticated users can access their feed.
+    
+    Features:
+        - Displays posts from followed users only
+        - Ordered by creation date (newest first)
+        - Supports pagination (configured globally)
+        - Returns empty list if user doesn't follow anyone
+    
+    Response:
+        - 200 OK: Returns list of posts from followed users
+        - 401 Unauthorized: If user is not authenticated
+    """
+    
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """
+        Return posts from users that the current user follows.
+        Ordered by creation date (most recent first).
+        """
+        user = self.request.user
+        # Get all users that the current user follows
+        following_users = user.following.all()
+        
+        # Get posts from those users, ordered by creation date
+        return Post.objects.filter(
+            author__in=following_users
+        ).select_related('author').prefetch_related('comments').order_by('-created_at')

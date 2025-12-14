@@ -193,3 +193,149 @@ class CommentAPITestCase(APITestCase):
         response = self.client.delete(f'/api/comments/{self.comment.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Comment.objects.count(), 0)
+
+
+class FeedTestCase(APITestCase):
+    """Test cases for feed functionality."""
+    
+    def setUp(self):
+        """Set up test users, follows, and posts."""
+        self.client = APIClient()
+        
+        # Create test users
+        self.user1 = User.objects.create_user(
+            username='user1',
+            email='user1@example.com',
+            password='testpass123'
+        )
+        self.user2 = User.objects.create_user(
+            username='user2',
+            email='user2@example.com',
+            password='testpass123'
+        )
+        self.user3 = User.objects.create_user(
+            username='user3',
+            email='user3@example.com',
+            password='testpass123'
+        )
+        self.user4 = User.objects.create_user(
+            username='user4',
+            email='user4@example.com',
+            password='testpass123'
+        )
+        
+        # user1 follows user2 and user3
+        self.user1.following.add(self.user2, self.user3)
+        
+        # Create posts from different users
+        self.post1 = Post.objects.create(
+            author=self.user2,
+            title='Post from User2',
+            content='Content from user2'
+        )
+        self.post2 = Post.objects.create(
+            author=self.user3,
+            title='Post from User3',
+            content='Content from user3'
+        )
+        self.post3 = Post.objects.create(
+            author=self.user4,
+            title='Post from User4',
+            content='Content from user4 (not followed)'
+        )
+        self.post4 = Post.objects.create(
+            author=self.user2,
+            title='Another post from User2',
+            content='More content from user2'
+        )
+        
+        # Authenticate user1
+        self.token = Token.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+    
+    def test_feed_shows_followed_users_posts(self):
+        """Test that feed shows posts from followed users only."""
+        response = self.client.get('/api/feed/')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Should have 3 posts (2 from user2, 1 from user3)
+        self.assertEqual(len(response.data['results']), 3)
+        
+        # Check that posts are from followed users
+        post_authors = [post['author']['username'] for post in response.data['results']]
+        self.assertIn('user2', post_authors)
+        self.assertIn('user3', post_authors)
+        self.assertNotIn('user4', post_authors)
+    
+    def test_feed_ordered_by_creation_date(self):
+        """Test that feed posts are ordered by creation date (newest first)."""
+        response = self.client.get('/api/feed/')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Get the posts in order
+        posts = response.data['results']
+        
+        # post4 should be first (most recent from user2)
+        self.assertEqual(posts[0]['title'], 'Another post from User2')
+        
+        # Verify posts are in descending order by created_at
+        for i in range(len(posts) - 1):
+            self.assertGreaterEqual(posts[i]['created_at'], posts[i + 1]['created_at'])
+    
+    def test_feed_empty_when_not_following_anyone(self):
+        """Test that feed is empty when user doesn't follow anyone."""
+        # Authenticate as user4 who doesn't follow anyone
+        token4 = Token.objects.create(user=self.user4)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token4.key}')
+        
+        response = self.client.get('/api/feed/')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 0)
+    
+    def test_feed_updates_when_following_changes(self):
+        """Test that feed updates when user follows/unfollows someone."""
+        # Initial feed has 3 posts
+        response = self.client.get('/api/feed/')
+        self.assertEqual(len(response.data['results']), 3)
+        
+        # user1 follows user4
+        self.user1.following.add(self.user4)
+        
+        # Feed should now have 4 posts
+        response = self.client.get('/api/feed/')
+        self.assertEqual(len(response.data['results']), 4)
+        
+        # user1 unfollows user2
+        self.user1.following.remove(self.user2)
+        
+        # Feed should now have 2 posts (1 from user3, 1 from user4)
+        response = self.client.get('/api/feed/')
+        self.assertEqual(len(response.data['results']), 2)
+    
+    def test_feed_requires_authentication(self):
+        """Test that feed requires authentication."""
+        # Remove authentication
+        self.client.credentials()
+        
+        response = self.client.get('/api/feed/')
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    
+    def test_feed_includes_post_details(self):
+        """Test that feed includes complete post details."""
+        response = self.client.get('/api/feed/')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Check that posts have all expected fields
+        post = response.data['results'][0]
+        self.assertIn('id', post)
+        self.assertIn('author', post)
+        self.assertIn('title', post)
+        self.assertIn('content', post)
+        self.assertIn('created_at', post)
+        self.assertIn('updated_at', post)
+        self.assertIn('comments', post)
