@@ -95,7 +95,17 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
-# Production: Set DATABASE_URL environment variable to your PostgreSQL connection string
+# Production PostgreSQL configuration example:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'your_db_name',
+#         'USER': 'your_db_user',
+#         'PASSWORD': 'your_db_password',
+#         'HOST': 'your_db_host',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -140,6 +150,25 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# AWS S3 Configuration for Media Files (optional)
+# To use AWS S3 for media files in production:
+# 1. Install: pip install boto3 django-storages
+# 2. Set environment variables: USE_S3=True, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME
+# 3. Uncomment the configuration below:
+#
+# USE_S3 = config('USE_S3', default=False, cast=bool)
+# if USE_S3:
+#     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+#     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+#     AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+#     AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+#     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+#     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+#     AWS_DEFAULT_ACL = 'public-read'
+#     AWS_LOCATION = 'media'
+#     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
