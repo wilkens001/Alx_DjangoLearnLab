@@ -63,7 +63,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop('password_confirm')
         
         # Create user using create_user method (handles password hashing)
-        user = User.objects.create_user(
+        user = get_user_model().objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
