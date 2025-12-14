@@ -12,6 +12,8 @@ from rest_framework.authtoken.models import Token
 # Get the custom user model
 User = get_user_model()
 
+# Example usage: serializers.CharField() for text fields
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
