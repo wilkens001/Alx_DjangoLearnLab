@@ -1,67 +1,105 @@
 # Social Media API
 
-A Django REST Framework-based social media API with user authentication, profile management, and social features.
+[![Django](https://img.shields.io/badge/Django-5.2-green.svg)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-3.14+-blue.svg)](https://www.django-rest-framework.org/)
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-ALX-orange.svg)](https://www.alxafrica.com/)
 
-## Project Overview
+A comprehensive Django REST Framework-based social media API with user authentication, social features, posts, comments, likes, follows, and real-time notifications.
 
-This Social Media API provides a robust backend for a social media platform, featuring:
-- User registration and authentication
-- Token-based authentication
-- Custom user profiles with bio and profile pictures
-- Follow/unfollow functionality
-- Posts and comments management
-- RESTful API endpoints
+## 📋 Project Overview
 
-## Features
+This Social Media API provides a complete backend for a modern social media platform featuring:
+- 🔐 User registration and token-based authentication
+- 👤 Custom user profiles with bio and profile pictures
+- 📝 Posts and comments with full CRUD operations
+- ❤️ Like/unlike functionality
+- 👥 Follow/unfollow system
+- 📰 Personalized feed showing posts from followed users
+- 🔔 Real-time notifications for likes, comments, and follows
+- 🔍 Search and filtering capabilities
+- 📄 Pagination for all list endpoints
+- 🚀 Production-ready with deployment configuration
 
-### User Authentication
-- **User Registration**: Create new user accounts with email verification
-- **User Login**: Authenticate users and receive authentication tokens
-- **Token Authentication**: Secure API endpoints using token-based authentication
+## ✨ Features
 
-### User Profile Management
-- **Custom User Model**: Extended user model with additional fields:
-  - `bio`: User biography (max 500 characters)
-  - `profile_picture`: User profile image
-  - `followers`: Many-to-many relationship for following other users
-- **Profile Endpoints**: View and update user profiles
-- **User Discovery**: List and search for other users
+### User Authentication & Profiles
+- ✅ User registration with email validation
+- ✅ Token-based authentication
+- ✅ Login/logout functionality
+- ✅ Custom user profiles (bio, profile picture)
+- ✅ Profile viewing and updates
+- ✅ User discovery and search
 
 ### Social Features
-- **Follow/Unfollow System**: Users can follow and unfollow each other
-- **Personalized Feed**: View posts from users you follow
-- **Followers & Following**: Track follower counts and relationships
+- ✅ Follow/unfollow users
+- ✅ Follower/following counts
+- ✅ Personalized feed (posts from followed users)
+- ✅ Activity tracking
 
-### Posts and Comments
-- **Create Posts**: Authenticated users can create posts
-- **CRUD Operations**: Full create, read, update, delete for posts and comments
-- **Author Permissions**: Only authors can edit/delete their own content
-- **Pagination**: Efficient handling of large datasets
-- **Filtering & Search**: Search posts by title/content, filter by author
-- **Nested Comments**: View all comments within post details
+### Posts & Comments
+- ✅ Create, read, update, delete posts
+- ✅ Comment on posts
+- ✅ Author-only permissions for editing
+- ✅ Pagination (10 items per page)
+- ✅ Search posts by title/content
+- ✅ Filter by author
 
-## Technology Stack
+### Engagement Features
+- ✅ Like/unlike posts
+- ✅ Like count tracking
+- ✅ Duplicate like prevention
+- ✅ Author notifications on likes
+
+### Notifications System
+- ✅ Notifications for:
+  - New followers
+  - Post likes
+  - Post comments
+- ✅ Read/unread status tracking
+- ✅ Mark individual notification as read
+- ✅ Mark all notifications as read
+- ✅ Filter notifications by read status
+
+### Production Ready
+- ✅ Environment variable configuration
+- ✅ Security headers enabled
+- ✅ PostgreSQL support
+- ✅ Static files handling (WhiteNoise)
+- ✅ AWS S3 support for media files
+- ✅ Gunicorn WSGI server configuration
+- ✅ Nginx reverse proxy setup
+- ✅ Comprehensive deployment documentation
+
+## 🛠️ Technology Stack
 
 - **Django 5.2**: Web framework
-- **Django REST Framework**: API development
-- **django-filter**: Advanced filtering capabilities
+- **Django REST Framework 3.14+**: API development
+- **django-filter 23.0+**: Advanced filtering capabilities
 - **Token Authentication**: Secure API access
-- **SQLite**: Database (development)
-- **Pillow**: Image processing for profile pictures
+- **PostgreSQL**: Production database
+- **SQLite**: Development database
+- **Pillow 10.0+**: Image processing for profile pictures
+- **Gunicorn**: Production WSGI server
+- **WhiteNoise**: Static file serving
+- **python-decouple**: Environment variable management
+- **dj-database-url**: Database configuration
+- **django-storages & boto3**: AWS S3 integration (optional)
 
-## Project Setup
+## 📦 Project Setup
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.13 or higher
 - pip (Python package manager)
 - Virtual environment (recommended)
+- PostgreSQL (for production)
 
 ### Installation Steps
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/Alx_DjangoLearnLab.git
+   git clone https://github.com/wilkens001/Alx_DjangoLearnLab.git
    cd Alx_DjangoLearnLab/social_media_api
    ```
 
@@ -81,33 +119,47 @@ This Social Media API provides a robust backend for a social media platform, fea
 
 3. **Install required packages:**
    ```bash
-   pip install django djangorestframework pillow
+   pip install -r requirements.txt
    ```
 
-4. **Apply database migrations:**
+4. **Set up environment variables:**
    ```bash
-   python manage.py makemigrations
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
+
+5. **Apply database migrations:**
+   ```bash
    python manage.py migrate
    ```
 
-5. **Create a superuser (optional, for admin access):**
+6. **Create a superuser (optional, for admin access):**
    ```bash
    python manage.py createsuperuser
    ```
 
-6. **Run the development server:**
+7. **Collect static files:**
+   ```bash
+   python manage.py collectstatic
+   ```
+
+8. **Run the development server:**
    ```bash
    python manage.py runserver
    ```
 
-The API will be available at `http://127.0.0.1:8000/`
+The API will be available at `http://127.0.0.1:8000/api/`
 
-## API Endpoints
+## 🌐 API Endpoints
+
+### Base URL
+- Development: `http://127.0.0.1:8000/api/`
+- Production: `https://your-domain.com/api/`
 
 ### Authentication Endpoints
 
 #### Register a New User
-- **URL**: `/api/register/`
+- **URL**: `/api/accounts/register/`
 - **Method**: `POST`
 - **Authentication**: Not required
 - **Request Body**:
@@ -116,9 +168,7 @@ The API will be available at `http://127.0.0.1:8000/`
     "username": "johndoe",
     "email": "john@example.com",
     "password": "securepassword123",
-    "password_confirm": "securepassword123",
-    "bio": "Software developer and tech enthusiast",
-    "profile_picture": null
+    "bio": "Software developer and tech enthusiast"
   }
   ```
 - **Success Response** (201 Created):
@@ -130,13 +180,12 @@ The API will be available at `http://127.0.0.1:8000/`
       "email": "john@example.com",
       "bio": "Software developer and tech enthusiast"
     },
-    "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b",
-    "message": "User registered successfully"
+    "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"
   }
   ```
 
 #### Login
-- **URL**: `/api/login/`
+- **URL**: `/api/accounts/login/`
 - **Method**: `POST`
 - **Authentication**: Not required
 - **Request Body**:
@@ -149,128 +198,100 @@ The API will be available at `http://127.0.0.1:8000/`
 - **Success Response** (200 OK):
   ```json
   {
+    "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b",
     "user": {
       "id": 1,
       "username": "johndoe",
-      "email": "john@example.com",
-      "bio": "Software developer and tech enthusiast"
-    },
-    "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b",
-    "message": "Login successful"
+      "email": "john@example.com"
+    }
   }
   ```
+
+#### Logout
+- **URL**: `/api/accounts/logout/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
 
 ### Profile Endpoints
 
 #### Get Current User Profile
-- **URL**: `/api/profile/`
+- **URL**: `/api/accounts/profile/`
 - **Method**: `GET`
 - **Authentication**: Required (Token)
-- **Headers**:
-  ```
-  Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
-  ```
-- **Success Response** (200 OK):
-  ```json
-  {
-    "id": 1,
-    "username": "johndoe",
-    "email": "john@example.com",
-    "first_name": "John",
-    "last_name": "Doe",
-    "bio": "Software developer and tech enthusiast",
-    "profile_picture": "/media/profile_pictures/john.jpg",
-    "date_joined": "2024-01-15T10:30:00Z",
-    "followers_count": 150,
-    "following_count": 200,
-    "followers": [2, 3, 5],
-    "following": [4, 6, 7]
-  }
-  ```
 
 #### Update User Profile
-- **URL**: `/api/profile/`
+- **URL**: `/api/accounts/profile/`
 - **Method**: `PUT` or `PATCH`
 - **Authentication**: Required (Token)
-- **Headers**:
-  ```
-  Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
-  ```
+
+### Posts & Comments Endpoints
+
+#### List All Posts
+- **URL**: `/api/posts/`
+- **Method**: `GET`
+- **Query Parameters**:
+  - `search`: Search by title or content
+  - `author__username`: Filter by author
+  - `page`: Page number
+
+#### Create Post
+- **URL**: `/api/posts/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
 - **Request Body**:
   ```json
   {
-    "email": "newemail@example.com",
-    "first_name": "John",
-    "last_name": "Doe",
-    "bio": "Updated bio text"
+    "title": "My First Post",
+    "content": "This is the content of my post..."
   }
   ```
-- **Success Response** (200 OK): Returns updated profile data
 
-#### List All Users
-- **URL**: `/api/users/`
-- **Method**: `GET`
-- **Authentication**: Optional
-- **Success Response** (200 OK): Returns array of user profiles
+#### Get/Update/Delete Post
+- **URL**: `/api/posts/<id>/`
+- **Methods**: `GET`, `PUT`, `PATCH`, `DELETE`
+- **Authentication**: Required for update/delete (must be author)
 
-#### Get Specific User Profile
-- **URL**: `/api/users/<user_id>/`
+#### List Comments
+- **URL**: `/api/comments/`
 - **Method**: `GET`
-- **Authentication**: Optional
-- **Success Response** (200 OK): Returns user profile data
+- **Query Parameters**:
+  - `post`: Filter by post ID
+
+#### Create Comment
+- **URL**: `/api/comments/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+- **Request Body**:
+  ```json
+  {
+    "post": 1,
+    "content": "Great post!"
+  }
+  ```
+
+### Like Endpoints
+
+#### Like a Post
+- **URL**: `/api/posts/<id>/like/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+
+#### Unlike a Post
+- **URL**: `/api/posts/<id>/unlike/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
 
 ### Follow Management Endpoints
 
 #### Follow a User
-- **URL**: `/api/follow/<user_id>/`
+- **URL**: `/api/accounts/follow/<user_id>/`
 - **Method**: `POST`
 - **Authentication**: Required (Token)
-- **Headers**:
-  ```
-  Authorization: Token your_token_here
-  ```
-- **Success Response** (200 OK):
-  ```json
-  {
-    "message": "You are now following username",
-    "user": {
-      "id": 2,
-      "username": "username",
-      "bio": "User bio",
-      "profile_picture": "/media/profile_pictures/user.jpg",
-      "followers_count": 10,
-      "following_count": 5
-    }
-  }
-  ```
-- **Error Responses**:
-  - `400 Bad Request`: Cannot follow yourself or already following
-  - `404 Not Found`: User doesn't exist
 
 #### Unfollow a User
-- **URL**: `/api/unfollow/<user_id>/`
+- **URL**: `/api/accounts/unfollow/<user_id>/`
 - **Method**: `POST`
 - **Authentication**: Required (Token)
-- **Headers**:
-  ```
-  Authorization: Token your_token_here
-  ```
-- **Success Response** (200 OK):
-  ```json
-  {
-    "message": "You have unfollowed username",
-    "user": {
-      "id": 2,
-      "username": "username",
-      "bio": "User bio",
-      "profile_picture": "/media/profile_pictures/user.jpg",
-      "followers_count": 9,
-      "following_count": 5
-    }
-  }
-  ```
-- **Error Response**:
-  - `400 Bad Request`: Not following this user
 
 ### Feed Endpoint
 
@@ -278,40 +299,28 @@ The API will be available at `http://127.0.0.1:8000/`
 - **URL**: `/api/feed/`
 - **Method**: `GET`
 - **Authentication**: Required (Token)
-- **Headers**:
-  ```
-  Authorization: Token your_token_here
-  ```
-- **Query Parameters**:
-  - `page`: Page number (optional, default: 1)
-- **Success Response** (200 OK):
-  ```json
-  {
-    "count": 25,
-    "next": "http://127.0.0.1:8000/api/feed/?page=2",
-    "previous": null,
-    "results": [
-      {
-        "id": 1,
-        "author": {
-          "id": 2,
-          "username": "johndoe",
-          "bio": "Software developer",
-          "profile_picture": "/media/profile_pictures/john.jpg"
-        },
-        "title": "My First Post",
-        "content": "This is the content of my first post...",
-        "created_at": "2025-12-14T10:30:00Z",
-        "updated_at": "2025-12-14T10:30:00Z",
-        "comment_count": 3,
-        "comments": [...]
-      }
-    ]
-  }
-  ```
-- **Description**: Returns posts from users you follow, ordered by creation date (newest first)
+- **Description**: Returns posts from users you follow, ordered by creation date
 
-## Authentication
+### Notifications Endpoints
+
+#### List Notifications
+- **URL**: `/api/notifications/`
+- **Method**: `GET`
+- **Authentication**: Required (Token)
+- **Query Parameters**:
+  - `read`: Filter by read status (`true`/`false`)
+
+#### Mark Notification as Read
+- **URL**: `/api/notifications/<id>/read/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+
+#### Mark All Notifications as Read
+- **URL**: `/api/notifications/mark-all-read/`
+- **Method**: `POST`
+- **Authentication**: Required (Token)
+
+## 🔐 Authentication
 
 This API uses Token Authentication. To access protected endpoints:
 
@@ -324,19 +333,54 @@ This API uses Token Authentication. To access protected endpoints:
 ### Example with curl:
 ```bash
 # Register a new user
-curl -X POST http://127.0.0.1:8000/api/register/ \
+curl -X POST http://127.0.0.1:8000/api/accounts/register/ \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"testpass123","password_confirm":"testpass123"}'
+  -d '{"username":"testuser","email":"test@example.com","password":"testpass123","bio":"Test user"}'
 
 # Login
-curl -X POST http://127.0.0.1:8000/api/login/ \
+curl -X POST http://127.0.0.1:8000/api/accounts/login/ \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","password":"testpass123"}'
 
 # Get profile (with token)
-curl -X GET http://127.0.0.1:8000/api/profile/ \
+curl -X GET http://127.0.0.1:8000/api/accounts/profile/ \
   -H "Authorization: Token your_token_here"
+
+# Create a post
+curl -X POST http://127.0.0.1:8000/api/posts/ \
+  -H "Authorization: Token your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My Post","content":"This is my post content"}'
 ```
+
+## 🧪 Running Tests
+
+The project includes a comprehensive test suite with **49 tests** covering all features:
+
+```bash
+# Run all tests
+python manage.py test
+
+# Run tests for specific app
+python manage.py test accounts
+python manage.py test posts
+python manage.py test notifications
+
+# Run with coverage
+python manage.py test --verbosity=2
+
+# Keep test database
+python manage.py test --keepdb
+```
+
+**Test Coverage:**
+- Authentication: 13 tests ✅
+- Posts & Comments: 13 tests ✅
+- Follows & Feed: 17 tests ✅
+- Likes: 9 tests ✅
+- Notifications: 11 tests ✅
+
+**Total: 49 tests** - All passing ✅
 
 ## User Model Structure
 
@@ -415,37 +459,105 @@ The custom user model extends Django's `AbstractUser` and includes:
    ```
 4. Click "Send"
 
-## Running Tests
-
-Run the automated tests:
-
-```bash
-python manage.py test accounts
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 social_media_api/
-├── manage.py
-├── social_media_api/
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-└── accounts/
-    ├── __init__.py
-    ├── admin.py
-    ├── apps.py
-    ├── models.py          # Custom User model
-    ├── serializers.py     # DRF serializers
-    ├── views.py           # API views
-    ├── urls.py            # URL routing
-    ├── tests.py           # Test cases
-    └── migrations/
-        └── __init__.py
+├── manage.py                      # Django management script
+├── requirements.txt               # Python dependencies
+├── .env.example                   # Environment variables template
+├── .gitignore                     # Git ignore rules
+├── Procfile                       # Heroku configuration
+├── runtime.txt                    # Python version for deployment
+├── gunicorn_config.py            # Gunicorn configuration
+├── nginx.conf                    # Nginx configuration
+├── db.sqlite3                    # Development database
+├── logs/                         # Application logs
+├── staticfiles/                  # Collected static files
+├── media/                        # User uploaded files
+├── social_media_api/             # Project settings
+│   ├── settings.py               # Development settings
+│   ├── settings_production.py   # Production settings
+│   ├── urls.py                   # URL routing
+│   └── wsgi.py                   # WSGI application
+├── accounts/                     # User authentication app
+│   ├── models.py                 # CustomUser model
+│   ├── serializers.py            # User serializers
+│   ├── views.py                  # Auth views
+│   ├── urls.py                   # Auth URLs
+│   └── tests.py                  # Auth tests (13 tests)
+├── posts/                        # Posts, comments, likes app
+│   ├── models.py                 # Post, Comment, Like models
+│   ├── serializers.py            # Post serializers
+│   ├── views.py                  # Post views
+│   ├── urls.py                   # Post URLs
+│   ├── permissions.py            # Custom permissions
+│   └── tests.py                  # Post tests (22 tests)
+├── notifications/                # Notifications app
+│   ├── models.py                 # Notification model
+│   ├── serializers.py            # Notification serializers
+│   ├── views.py                  # Notification views
+│   ├── urls.py                   # Notification URLs
+│   └── tests.py                  # Notification tests (11 tests)
+└── Documentation/                # Project documentation
+    ├── README.md                 # This file
+    ├── DEPLOYMENT.md             # Full deployment guide
+    ├── QUICK_DEPLOY.md           # Quick deployment guide
+    ├── DEPLOY_WITHOUT_CLI.md     # Deploy without Heroku CLI
+    ├── README_DEPLOYMENT.md      # Deployment overview
+    └── TASK_*_COMPLETION.md      # Task completion docs
 ```
+
+## 🚀 Deployment
+
+The project is production-ready and can be deployed to various platforms:
+
+### Deployment Options
+
+1. **Heroku** (Easiest - Web Dashboard)
+   - See: `DEPLOY_WITHOUT_CLI.md`
+   - Free tier available
+   - Automatic SSL
+
+2. **Render.com** (Heroku Alternative)
+   - Free tier available
+   - GitHub integration
+
+3. **Railway.app** (Modern Platform)
+   - Automatic deploys
+   - Free tier
+
+4. **DigitalOcean** App Platform
+   - Managed hosting
+   - $5/month minimum
+
+5. **VPS** (Full Control)
+   - Ubuntu/Debian server
+   - Manual setup required
+
+### Quick Deploy to Heroku
+
+See `QUICK_DEPLOY.md` for step-by-step instructions.
+
+### Environment Variables
+
+Required for production:
+```env
+SECRET_KEY=your-secret-key
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com
+DATABASE_URL=postgres://user:pass@host:port/db
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+```
+
+### Deployment Documentation
+
+- **Full Guide**: `DEPLOYMENT.md` (700+ lines)
+- **Quick Start**: `QUICK_DEPLOY.md`
+- **No CLI**: `DEPLOY_WITHOUT_CLI.md`
+- **Overview**: `README_DEPLOYMENT.md`
 
 ## Development Notes
 
@@ -505,22 +617,46 @@ Authorization: Token your_token_here
 ```
 (Note: "Token" not "Bearer")
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📝 License
 
-This project is part of the ALX Django Learning Lab.
+This project is part of the ALX Django Learning Lab curriculum.
 
-## Contact
+## 👥 Authors
 
-For questions or support, please contact the development team.
+- **wilkens001** - [GitHub](https://github.com/wilkens001)
+
+## 🔗 Links
+
+- **Repository**: https://github.com/wilkens001/Alx_DjangoLearnLab
+- **Directory**: `social_media_api`
+- **Documentation**: See `DEPLOYMENT.md` and other docs
+
+## ✨ Acknowledgments
+
+- ALX Africa for the curriculum
+- Django and DRF communities
+- All contributors and reviewers
+
+## 📞 Support
+
+For issues or questions:
+- Open an issue on GitHub
+- Check the documentation files
+- Review the troubleshooting section above
 
 ---
 
-**Note**: This is a development version. Additional security measures should be implemented before deploying to production.
+**Project Status**: ✅ Production Ready  
+**Last Updated**: December 14, 2025  
+**Version**: 1.0.0  
+
+**Repository**: https://github.com/wilkens001/Alx_DjangoLearnLab  
+**Public Access**: ✅ Enabled for Review
