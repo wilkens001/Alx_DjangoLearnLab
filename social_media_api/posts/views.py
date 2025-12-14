@@ -9,14 +9,15 @@ delete their own posts and comments.
 """
 
 from rest_framework import viewsets, permissions, filters, generics
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
 
-from .models import Post, Comment
-from .serializers import PostSerializer, PostListSerializer, CommentSerializer
+from .models import Post, Comment, Like
+from .serializers import PostSerializer, PostListSerializer, CommentSerializer, LikeSerializer
 from .permissions import IsAuthorOrReadOnly
 
 
@@ -101,8 +102,20 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """
         Set the comment author to the current authenticated user.
+        Create notification for post author.
         """
-        serializer.save(author=self.request.user)
+        comment = serializer.save(author=self.request.user)
+        
+        # Create notification for post author (if not commenting on own post)
+        if comment.post.author != self.request.user:
+            from notifications.models import Notification
+            Notification.objects.create(
+                recipient=comment.post.author,
+                actor=self.request.user,
+                verb='commented on your post',
+                target_content_type=ContentType.objects.get_for_model(comment.post),
+                target_object_id=comment.post.id
+            )
     
     def get_queryset(self):
         """
@@ -153,3 +166,83 @@ class FeedView(generics.ListAPIView):
         
         # Get posts from those users, ordered by creation date
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def like_post(request, pk):
+    """
+    Like a post.
+    
+    POST /api/posts/<int:pk>/like/
+    
+    Creates a like for the specified post by the authenticated user.
+    Prevents duplicate likes and creates a notification for the post author.
+    
+    Response:
+        - 201 Created: Like created successfully
+        - 400 Bad Request: Already liked
+        - 404 Not Found: Post doesn't exist
+    """
+    post = generics.get_object_or_404(Post, pk=pk)
+    user = request.user
+    
+    # Check if user already liked the post
+    if Like.objects.filter(user=user, post=post).exists():
+        return Response({
+            'error': 'You have already liked this post'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Create the like
+    like = Like.objects.create(user=user, post=post)
+    
+    # Create notification for post author (if not liking own post)
+    if post.author != user:
+        from notifications.models import Notification
+        Notification.objects.create(
+            recipient=post.author,
+            actor=user,
+            verb='liked your post',
+            target_content_type=ContentType.objects.get_for_model(post),
+            target_object_id=post.id
+        )
+    
+    serializer = LikeSerializer(like)
+    return Response({
+        'message': f'You liked the post "{post.title}"',
+        'like': serializer.data
+    }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def unlike_post(request, pk):
+    """
+    Unlike a post.
+    
+    POST /api/posts/<int:pk>/unlike/
+    
+    Removes the like from the specified post by the authenticated user.
+    
+    Response:
+        - 200 OK: Like removed successfully
+        - 400 Bad Request: Post not liked
+        - 404 Not Found: Post doesn't exist
+    """
+    post = generics.get_object_or_404(Post, pk=pk)
+    user = request.user
+    
+    # Check if user has liked the post
+    try:
+        like = Like.objects.get(user=user, post=post)
+    except Like.DoesNotExist:
+        return Response({
+            'error': 'You have not liked this post'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Delete the like
+    like.delete()
+    
+    return Response({
+        'message': f'You unliked the post "{post.title}"'
+    }, status=status.HTTP_200_OK)

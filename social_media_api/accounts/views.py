@@ -12,6 +12,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, get_user_model
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
 # Example usage: generics.GenericAPIView, CustomUser.objects.all()
 from .serializers import (
     UserRegistrationSerializer,
@@ -227,6 +228,16 @@ def follow_user(request, user_id):
     
     # Add to following
     current_user.following.add(user_to_follow)
+    
+    # Create notification for the followed user
+    from notifications.models import Notification
+    Notification.objects.create(
+        recipient=user_to_follow,
+        actor=current_user,
+        verb='started following you',
+        target_content_type=ContentType.objects.get_for_model(user_to_follow),
+        target_object_id=user_to_follow.id
+    )
     
     serializer = UserFollowSerializer(user_to_follow)
     return Response({
