@@ -1,0 +1,24 @@
+# systemd service file for Gunicorn
+# Location: /etc/systemd/system/gunicorn.service
+
+[Unit]
+Description=Gunicorn daemon for Social Media API
+After=network.target
+
+[Service]
+User=social_media
+Group=social_media
+WorkingDirectory=/opt/social_media_api/social_media_api
+Environment="PATH=/opt/social_media_api/venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=social_media_api.settings_production"
+EnvironmentFile=/opt/social_media_api/.env
+ExecStart=/opt/social_media_api/venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/opt/social_media_api/gunicorn.sock \
+    --access-logfile /var/log/gunicorn/access.log \
+    --error-logfile /var/log/gunicorn/error.log \
+    --log-level info \
+    social_media_api.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
