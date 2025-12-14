@@ -9,6 +9,7 @@ This Social Media API provides a robust backend for a social media platform, fea
 - Token-based authentication
 - Custom user profiles with bio and profile pictures
 - Follow/unfollow functionality
+- Posts and comments management
 - RESTful API endpoints
 
 ## Features
@@ -26,10 +27,19 @@ This Social Media API provides a robust backend for a social media platform, fea
 - **Profile Endpoints**: View and update user profiles
 - **User Discovery**: List and search for other users
 
+### Posts and Comments
+- **Create Posts**: Authenticated users can create posts
+- **CRUD Operations**: Full create, read, update, delete for posts and comments
+- **Author Permissions**: Only authors can edit/delete their own content
+- **Pagination**: Efficient handling of large datasets
+- **Filtering & Search**: Search posts by title/content, filter by author
+- **Nested Comments**: View all comments within post details
+
 ## Technology Stack
 
 - **Django 5.2**: Web framework
 - **Django REST Framework**: API development
+- **django-filter**: Advanced filtering capabilities
 - **Token Authentication**: Secure API access
 - **SQLite**: Database (development)
 - **Pillow**: Image processing for profile pictures
