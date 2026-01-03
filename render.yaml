@@ -2,15 +2,16 @@ services:
   - type: web
     name: social-media-api
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn social_media_api.wsgi:application
+    rootDir: social_media_api
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: gunicorn social_media_api.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.0
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: false
+        value: False
       - key: ALLOWED_HOSTS
         value: .onrender.com
       - key: DATABASE_URL
