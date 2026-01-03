@@ -3,11 +3,12 @@ services:
     name: social-media-api
     runtime: python
     rootDir: social_media_api
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
-    startCommand: gunicorn social_media_api.wsgi:application --bind 0.0.0.0:$PORT
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: gunicorn social_media_api.wsgi:application
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.0
+        value: 3.11.7
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
